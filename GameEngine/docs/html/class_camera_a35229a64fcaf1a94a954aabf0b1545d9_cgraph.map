@@ -1,0 +1,9 @@
+<map id="Camera::Initialize" name="Camera::Initialize">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,127,57"/>
+<area shape="rect" id="Node000002" href="$class_camera.html#aa083de8522b4424b0f0943d7e887019e" title=" " alt="" coords="175,5,310,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="127,33,159,28,160,33,127,38"/>
+<area shape="rect" id="Node000004" href="$class_camera.html#ab41e9e98499b4b6f3898d6b7e52a8be0" title=" " alt="" coords="175,56,310,83"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="127,50,160,55,159,60,127,55"/>
+<area shape="rect" id="Node000003" href="$class_camera.html#aeffd7e25c1d933ac532ac3679d84ee4b" title=" " alt="" coords="358,5,490,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="310,16,343,16,343,21,310,21"/>
+</map>

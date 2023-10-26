@@ -1,0 +1,137 @@
+\doxysection{Shader\+Manager.\+cpp}
+\hypertarget{_shader_manager_8cpp_source}{}\label{_shader_manager_8cpp_source}\index{src/ShaderManager.cpp@{src/ShaderManager.cpp}}
+\mbox{\hyperlink{_shader_manager_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00001}00001\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{pch_8h}{pch.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00002}00002\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_shader_manager_8h}{ShaderManager.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00005}00005\ \textcolor{keyword}{namespace\ }fs\ =\ std::filesystem;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00007}\mbox{\hyperlink{class_shader_manager_a25b86c700b770f96d68aff19d18a0433}{00007}}\ \mbox{\hyperlink{class_shader_manager_a25b86c700b770f96d68aff19d18a0433}{ShaderManager::ShaderManager}}(\ \mbox{\hyperlink{class_graphics_device}{GraphicsDevice}}*\ device,\ \textcolor{keyword}{const}\ std::string\&\ directory\ )}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00008}00008\ \ \ \ \ :\ device(\ device\ ),\ shaderDirectory(\ directory\ )}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00009}00009\ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00010}00010\ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00012}\mbox{\hyperlink{class_shader_manager_a7603399f16432b94223b9fa78f74fb87}{00012}}\ \mbox{\hyperlink{class_shader_manager_a7603399f16432b94223b9fa78f74fb87}{ShaderManager::\string~ShaderManager}}()}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00014}00014\ \ \ \ \ \textcolor{comment}{//\ Cleanup\ if\ necessary}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00015}00015\ \ \ \ \ \textcolor{comment}{//\ If\ using\ smart\ pointers\ like\ shared\_ptr,\ explicit\ cleanup\ might\ not\ be\ necessary\ here}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00016}00016\ \ \ \ \ \mbox{\hyperlink{class_shader_manager_ac7af61d1d838b0eccbbcac27b47f46c9}{shaders}}.clear();}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00017}00017\ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00019}\mbox{\hyperlink{class_shader_manager_a6d8ac1d497a7ae3d1da64456d24b94a3}{00019}}\ std::shared\_ptr<ShaderProgram>\ \mbox{\hyperlink{class_shader_manager_a6d8ac1d497a7ae3d1da64456d24b94a3}{ShaderManager::LoadShader}}(\ \textcolor{keyword}{const}\ std::string\&\ vsName,\ \textcolor{keyword}{const}\ std::string\&\ psName\ )}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00021}00021\ \ \ \ \ std::string\ key\ =\ \mbox{\hyperlink{class_shader_manager_a9e20b23487904239ee0fce4998585a11}{GenerateShaderKey}}(\ vsName,\ psName\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00023}00023\ \ \ \ \ \textcolor{comment}{//\ Check\ if\ the\ shader\ is\ already\ loaded}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ \mbox{\hyperlink{class_shader_manager_ac7af61d1d838b0eccbbcac27b47f46c9}{shaders}}.find(\ key\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00025}00025\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ \mbox{\hyperlink{class_shader_manager_ac7af61d1d838b0eccbbcac27b47f46c9}{shaders}}.end())}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00026}00026\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00027}00027\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ it-\/>second.shaderProgram;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00028}00028\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00030}00030\ \ \ \ \ \textcolor{comment}{//\ Load\ and\ compile\ the\ shader}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{auto}\ shader\ =\ std::make\_shared<ShaderProgram>(\ \mbox{\hyperlink{class_shader_manager_afca1d9c45a18ba791f8c14c932d66159}{device}}\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00032}00032\ \ \ \ \ shader-\/>LoadShader(\ vsName.c\_str(),\ psName.c\_str()\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00034}00034\ \ \ \ \ \textcolor{comment}{//\ Get\ the\ last\ write\ time\ for\ the\ shaders}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00035}00035\ \ \ \ \ std::filesystem::path\ vsPath\ =\ \textcolor{stringliteral}{"{}../"{}}\ +\ \mbox{\hyperlink{class_shader_manager_aca4db784d6b43f3b169e635ec8e7b42c}{shaderDirectory}}\ +\ \textcolor{stringliteral}{"{}/"{}}\ +\ vsName\ +\ \textcolor{stringliteral}{"{}.hlsl"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00036}00036\ \ \ \ \ std::filesystem::path\ psPath\ =\ \textcolor{stringliteral}{"{}../"{}}\ +\ \mbox{\hyperlink{class_shader_manager_aca4db784d6b43f3b169e635ec8e7b42c}{shaderDirectory}}\ +\ \textcolor{stringliteral}{"{}/"{}}\ +\ psName\ +\ \textcolor{stringliteral}{"{}.hlsl"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00037}00037\ \ \ \ \ \textcolor{keyword}{auto}\ lastWriteTime\ =\ max(\ std::filesystem::last\_write\_time(\ vsPath\ ),\ std::filesystem::last\_write\_time(\ psPath\ )\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00039}00039\ \ \ \ \ \textcolor{comment}{//\ Store\ the\ shader\ and\ its\ last\ write\ time\ in\ the\ map}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00040}00040\ \ \ \ \ \mbox{\hyperlink{class_shader_manager_struct_shader_manager_1_1_shader_info}{ShaderInfo}}\ info;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00041}00041\ \ \ \ \ info.\mbox{\hyperlink{class_shader_manager_afcbcf891c7e911759c5083fd4b4d7c4d}{shaderProgram}}\ =\ shader;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00042}00042\ \ \ \ \ info.\mbox{\hyperlink{class_shader_manager_a75f3cce99a943a23dc2aa752d5df2745}{lastWriteTime}}\ =\ lastWriteTime;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00043}00043\ \ \ \ \ \mbox{\hyperlink{class_shader_manager_ac7af61d1d838b0eccbbcac27b47f46c9}{shaders}}[key]\ =\ info;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00045}00045\ \ \ \ \ \textcolor{keywordflow}{return}\ shader;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00046}00046\ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00049}\mbox{\hyperlink{class_shader_manager_ac6e7ac40f579b9ff0d44c91379e5e631}{00049}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_shader_manager_ac6e7ac40f579b9ff0d44c91379e5e631}{ShaderManager::ReloadShader}}(\ \textcolor{keyword}{const}\ std::string\&\ vsName,\ \textcolor{keyword}{const}\ std::string\&\ psName\ )}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00050}00050\ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00051}00051\ \ \ \ \ std::string\ key\ =\ \mbox{\hyperlink{class_shader_manager_a9e20b23487904239ee0fce4998585a11}{GenerateShaderKey}}(\ vsName,\ psName\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00053}00053\ \ \ \ \ \textcolor{comment}{//\ Check\ if\ the\ shader\ exists\ in\ the\ map}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00054}00054\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ \mbox{\hyperlink{class_shader_manager_ac7af61d1d838b0eccbbcac27b47f46c9}{shaders}}.find(\ key\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00055}00055\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ \mbox{\hyperlink{class_shader_manager_ac7af61d1d838b0eccbbcac27b47f46c9}{shaders}}.end())}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00056}00056\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Clear\ the\ resources\ of\ the\ old\ shader}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00058}00058\ \ \ \ \ \ \ \ \ it-\/>second.shaderProgram-\/>ClearResources();}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Load\ and\ recompile\ the\ shader}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00061}00061\ \ \ \ \ \ \ \ \ it-\/>second.shaderProgram-\/>LoadShader(\ vsName.c\_str(),\ psName.c\_str()\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00062}00062\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00063}00063\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00064}00064\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ not\ found,\ simply\ load\ the\ new\ shader}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_shader_manager_a6d8ac1d497a7ae3d1da64456d24b94a3}{LoadShader}}(\ vsName,\ psName\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00067}00067\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00068}00068\ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00071}\mbox{\hyperlink{class_shader_manager_a6eefb74e7cf9795b75f018a6e64ba931}{00071}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_shader_manager_a6eefb74e7cf9795b75f018a6e64ba931}{ShaderManager::CheckForShaderUpdates}}()}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00072}00072\ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00073}00073\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [key,\ shaderInfo]\ :\ \mbox{\hyperlink{class_shader_manager_ac7af61d1d838b0eccbbcac27b47f46c9}{shaders}})}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00074}00074\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Derive\ filenames\ from\ the\ key}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ separatorPos\ =\ key.find(\ \textcolor{charliteral}{'\_'}\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (separatorPos\ ==\ std::string::npos)}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ is\ unexpected\ and\ probably\ an\ error\ in\ key\ formation.}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00083}00083\ \ \ \ \ \ \ \ \ std::string\ vsName\ =\ key.substr(\ 0,\ separatorPos\ )\ +\ \textcolor{stringliteral}{"{}.hlsl"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00084}00084\ \ \ \ \ \ \ \ \ std::string\ psName\ =\ key.substr(\ separatorPos\ +\ 1\ )\ +\ \textcolor{stringliteral}{"{}.hlsl"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Construct\ the\ full\ paths}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00087}00087\ \ \ \ \ \ \ \ \ std::filesystem::path\ vsPath\ =\ \textcolor{stringliteral}{"{}../"{}}\ +\ \mbox{\hyperlink{class_shader_manager_aca4db784d6b43f3b169e635ec8e7b42c}{shaderDirectory}}\ +\ \textcolor{stringliteral}{"{}/"{}}\ +\ vsName;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00088}00088\ \ \ \ \ \ \ \ \ std::filesystem::path\ psPath\ =\ \textcolor{stringliteral}{"{}../"{}}\ +\ \mbox{\hyperlink{class_shader_manager_aca4db784d6b43f3b169e635ec8e7b42c}{shaderDirectory}}\ +\ \textcolor{stringliteral}{"{}/"{}}\ +\ psName;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Get\ the\ current\ write\ times\ for\ the\ shaders}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ currentVsWriteTime\ =\ std::filesystem::last\_write\_time(\ vsPath\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ currentPsWriteTime\ =\ std::filesystem::last\_write\_time(\ psPath\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ either\ of\ the\ shaders\ has\ been\ modified\ since\ it\ was\ last\ loaded,\ reload\ it}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentVsWriteTime\ >\ shaderInfo.lastWriteTime\ ||\ currentPsWriteTime\ >\ shaderInfo.lastWriteTime)}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ vsNameWithoutExtension\ =\ key.substr(\ 0,\ separatorPos\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ psNameWithoutExtension\ =\ key.substr(\ separatorPos\ +\ 1\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 1.\ Delete\ the\ .cso\ file\ from\ shadercache}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::path\ vsCsoPath\ =\ \textcolor{stringliteral}{"{}assets/shaders/shadercache/"{}}\ +\ vsNameWithoutExtension\ +\ \textcolor{stringliteral}{"{}.cso"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::path\ psCsoPath\ =\ \textcolor{stringliteral}{"{}assets/shaders/shadercache/"{}}\ +\ psNameWithoutExtension\ +\ \textcolor{stringliteral}{"{}.cso"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::remove(\ vsCsoPath\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::remove(\ psCsoPath\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 2.\ Delete\ the\ .hlsl\ file\ from\ /assets/shaders/}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::path\ binVsPath\ =\ \textcolor{stringliteral}{"{}assets/shaders/"{}}\ +\ vsNameWithoutExtension\ +\ \textcolor{stringliteral}{"{}.hlsl"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::path\ binPsPath\ =\ \textcolor{stringliteral}{"{}assets/shaders/"{}}\ +\ psNameWithoutExtension\ +\ \textcolor{stringliteral}{"{}.hlsl"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::remove(\ binVsPath\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::remove(\ binPsPath\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 3.\ Copy\ the\ .hlsl\ file\ from\ /assets/shaders/\ to\ /assets/shaders/}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::path\ srcVsPath\ =\ \textcolor{stringliteral}{"{}../assets/shaders/"{}}\ +\ vsNameWithoutExtension\ +\ \textcolor{stringliteral}{"{}.hlsl"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::path\ srcPsPath\ =\ \textcolor{stringliteral}{"{}../assets/shaders/"{}}\ +\ psNameWithoutExtension\ +\ \textcolor{stringliteral}{"{}.hlsl"{}};}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::copy(\ srcVsPath,\ binVsPath\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ std::filesystem::copy(\ srcPsPath,\ binPsPath\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Reload\ the\ shader}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_shader_manager_ac6e7ac40f579b9ff0d44c91379e5e631}{ReloadShader}}(\ vsNameWithoutExtension,\ psNameWithoutExtension\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Update\ the\ last\ write\ time}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ shaderInfo.lastWriteTime\ =\ max(\ currentVsWriteTime,\ currentPsWriteTime\ );}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00124}00124\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00125}00125\ \}}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00126}00126\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00128}\mbox{\hyperlink{class_shader_manager_a9e20b23487904239ee0fce4998585a11}{00128}}\ std::string\ \mbox{\hyperlink{class_shader_manager_a9e20b23487904239ee0fce4998585a11}{ShaderManager::GenerateShaderKey}}(\ \textcolor{keyword}{const}\ std::string\&\ vsName,\ \textcolor{keyword}{const}\ std::string\&\ psName\ )}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00129}00129\ \{}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00130}00130\ \ \ \ \ \textcolor{keywordflow}{return}\ vsName\ +\ \textcolor{stringliteral}{"{}\_"{}}\ +\ psName;}
+\DoxyCodeLine{\Hypertarget{_shader_manager_8cpp_source_l00131}00131\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{1969eece-0e56-40be-95bd-01dce1ac3d9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Shaders">
+      <UniqueIdentifier>{845d6f93-4258-44d5-b4f8-c4a9bcb54248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Shaders\Include">
+      <UniqueIdentifier>{75433f35-4b31-4e13-8bfd-b86c2c30a5ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Shaders\Vertex">
+      <UniqueIdentifier>{ef4df17a-b277-4dbc-89cf-25677cb21d49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Shaders\Pixel">
+      <UniqueIdentifier>{0d9fe11b-64cb-4658-b1f6-99e5fb57e4c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Meshes">
+      <UniqueIdentifier>{e8ebff93-e6f7-41bb-a86e-4d23938dafa6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Win32Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Win32Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GameEngine.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="GameEngine.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ShaderCommon.hlsli">
+      <Filter>Assets\Shaders\Include</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="BasicVS.hlsl">
+      <Filter>Assets\Shaders\Vertex</Filter>
+    </FxCompile>
+    <FxCompile Include="BasicPS.hlsl">
+      <Filter>Assets\Shaders\Pixel</Filter>
+    </FxCompile>
+    <FxCompile Include="TransparentPS.hlsl">
+      <Filter>Assets\Shaders\Pixel</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="Assets\Meshes\cube.glb">
+      <Filter>Assets\Meshes</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Assets\Meshes\cubePretty.glb">
+      <Filter>Assets\Meshes</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Assets\Meshes\cylinder.glb">
+      <Filter>Assets\Meshes</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Assets\Meshes\plane.glb">
+      <Filter>Assets\Meshes</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Assets\Meshes\sphere.glb">
+      <Filter>Assets\Meshes</Filter>
+    </CopyFileToFolders>
+  </ItemGroup>
+</Project>

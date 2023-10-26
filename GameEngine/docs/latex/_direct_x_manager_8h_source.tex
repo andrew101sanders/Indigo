@@ -1,0 +1,61 @@
+\doxysection{Direct\+XManager.\+h}
+\hypertarget{_direct_x_manager_8h_source}{}\label{_direct_x_manager_8h_source}\index{src/DirectXManager.h@{src/DirectXManager.h}}
+\mbox{\hyperlink{_direct_x_manager_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00001}00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00003}00003\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_game_engine_8h}{GameEngine.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00005}00005\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_camera_8h}{Camera.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_graphics_device_8h}{GraphicsDevice.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_mesh_8h}{Mesh.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_render_state_8h}{RenderState.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_shader_program_8h}{ShaderProgram.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_shader_manager_8h}{ShaderManager.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_material_8h}{Material.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_model_8h}{Model.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00015}\mbox{\hyperlink{class_direct_x_manager}{00015}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_direct_x_manager}{DirectXManager}}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00017}00017\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00018}00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_ac95cceb904d9893d0b135c2bd9039b33}{Initialize}}(HWND\ hWnd,\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{_game_engine_8cpp_a28a80955f4c5ad4e8fd20b9097c5efd8}{windowWidth}},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{_game_engine_8cpp_ae754d7bb4fcb4ce8d3fa3406786f9a8c}{windowHeight}});}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00019}00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_a2717dd089cad24c77c753ecc6bc139b2}{Update}}();}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00020}00020\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_a939df5d867998c476f7c8fbacb39556d}{RenderFrame}}(\textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_direct_x_manager_a45cce93c606f84e3a2bb7a5f61d8735a}{totalTime}});}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00021}00021\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_aa0dc645dbe7cf4b07dae99c226bd7e69}{AddModel}}(\ \mbox{\hyperlink{class_model}{Model}}*\ model\ );}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00023}00023\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_a4b6ab131def1de37e8af1f66dd64bf14}{handleLeftDown}}(\ WPARAM,\ LPARAM);}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00024}00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_abb2f45d41bf579bb5b63d82f14552ec4}{handleLeftUp}}(LPARAM);}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00025}00025\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_a7f652b8737c1a55544f67b19b19f4d6a}{handleKeyDown}}(WPARAM);}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00026}00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_a21aa12e9c419900fc6f84f4c1b90d38e}{handleKeyUp}}(\ WPARAM\ );}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00027}00027\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_ab8c1c45c0b3e8140250e8927870f1258}{handleMouseMove}}(WPARAM,\ LPARAM);}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00028}00028\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_a35b4e0a9102b99107dfde7a0d39d16aa}{handleLostFocus}}(\ WPARAM\ wParam\ );}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00029}00029\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_a048268665d6ae0020237dc38917d3e47}{handleSetFocus}}();}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00030}00030\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_adbd14e0b412bddda9319c094866abfd6}{handleMouseWheel}}(WPARAM);}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00031}00031\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_direct_x_manager_a18eff287d424112f078f38c91cb943d7}{handleSize}}(LPARAM);}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00032}00032\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00033}\mbox{\hyperlink{class_direct_x_manager_afe60564a6e68fb10cca2d4b2cd86b39f}{00033}}\ \ \ \ \ \mbox{\hyperlink{class_graphics_device}{GraphicsDevice}}\ *\mbox{\hyperlink{class_direct_x_manager_afe60564a6e68fb10cca2d4b2cd86b39f}{mainDevice}};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00034}\mbox{\hyperlink{class_direct_x_manager_a90193fe4c0bd4109e0aa7a078d59f049}{00034}}\ \ \ \ \ \mbox{\hyperlink{class_shader_manager}{ShaderManager}}*\ \mbox{\hyperlink{class_direct_x_manager_a90193fe4c0bd4109e0aa7a078d59f049}{shaderManager}};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00035}\mbox{\hyperlink{class_direct_x_manager_a4cc63f363cf48f3399583c611db1e9e9}{00035}}\ \ \ \ \ std::unordered\_map<std::shared\_ptr<ShaderProgram>,\ std::unordered\_map<Material*,\ std::vector<Mesh*>>>\ \mbox{\hyperlink{class_direct_x_manager_a4cc63f363cf48f3399583c611db1e9e9}{shaderMaterialToMeshesMap}};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00037}\mbox{\hyperlink{class_direct_x_manager_ad134e0bb603ba28a6720d2bb731bb069}{00037}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_direct_x_manager_ad134e0bb603ba28a6720d2bb731bb069}{timeSinceLastShaderCheck}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00039}\mbox{\hyperlink{class_direct_x_manager_a7a4cb19ab5a77d8efc0c33916f7b38ef}{00039}}\ \ \ \ \ \mbox{\hyperlink{class_model}{Model}}*\ \mbox{\hyperlink{class_direct_x_manager_a7a4cb19ab5a77d8efc0c33916f7b38ef}{mainControllableModel}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00041}\mbox{\hyperlink{class_direct_x_manager_a4dbe505e327adde2ec1f1134713920e9}{00041}}\ \ \ \ \ LARGE\_INTEGER\ \mbox{\hyperlink{class_direct_x_manager_a8370452cc8388d2c3dfd65bed72f3d98}{frequency}},\ \mbox{\hyperlink{class_direct_x_manager_a27a208aacf33d78272657d25634b108f}{startCounter}},\ \mbox{\hyperlink{class_direct_x_manager_a4dbe505e327adde2ec1f1134713920e9}{endCounter}};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00042}\mbox{\hyperlink{class_direct_x_manager_a92e3827411ce95863b1a258f3d887bb0}{00042}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_direct_x_manager_a92e3827411ce95863b1a258f3d887bb0}{targetFrameRate}}\ =\ 60.0;\ \textcolor{comment}{//\ 60\ FPS}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00043}\mbox{\hyperlink{class_direct_x_manager_aed0b0467d25e91af19312e18c7e6d316}{00043}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_direct_x_manager_aed0b0467d25e91af19312e18c7e6d316}{targetFrameTime}}\ =\ 1.0\ /\ \mbox{\hyperlink{class_direct_x_manager_a92e3827411ce95863b1a258f3d887bb0}{targetFrameRate}};\ \textcolor{comment}{//\ Approx.\ 0.01667\ seconds\ per\ frame}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00044}\mbox{\hyperlink{class_direct_x_manager_ac1fd86e3c787378cdc6d9cc6d143fcf3}{00044}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_direct_x_manager_ac1fd86e3c787378cdc6d9cc6d143fcf3}{elapsedTime}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00045}\mbox{\hyperlink{class_direct_x_manager_a45cce93c606f84e3a2bb7a5f61d8735a}{00045}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_direct_x_manager_a45cce93c606f84e3a2bb7a5f61d8735a}{totalTime}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00046}\mbox{\hyperlink{class_direct_x_manager_a768502f7ccad169367e58c833e5dc24a}{00046}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_direct_x_manager_a768502f7ccad169367e58c833e5dc24a}{frameTime}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00047}\mbox{\hyperlink{class_direct_x_manager_a54ae6b21ea21f8106cd634a454aa6581}{00047}}\ \ \ \ \ \mbox{\hyperlink{class_camera}{Camera}}*\ \mbox{\hyperlink{class_direct_x_manager_a54ae6b21ea21f8106cd634a454aa6581}{camera}};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00048}\mbox{\hyperlink{class_direct_x_manager_af4b6239765465641f31ecab766d84edb}{00048}}\ \ \ \ \ POINT\ \mbox{\hyperlink{class_direct_x_manager_af4b6239765465641f31ecab766d84edb}{lastMousePos}};\ \textcolor{comment}{//\ Stores\ last\ known\ mouse\ position}}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00049}\mbox{\hyperlink{class_direct_x_manager_ae3d25551ba68cb280d7f474dcd372670}{00049}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_direct_x_manager_ae3d25551ba68cb280d7f474dcd372670}{isMouseCaptured}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00051}\mbox{\hyperlink{class_direct_x_manager_ac8e819e9012959da73f9abdfe0eab43e}{00051}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_direct_x_manager_ac8e819e9012959da73f9abdfe0eab43e}{keyW}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00052}\mbox{\hyperlink{class_direct_x_manager_a649c3aad4e86180e1de241a61d91880b}{00052}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_direct_x_manager_a649c3aad4e86180e1de241a61d91880b}{keyA}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00053}\mbox{\hyperlink{class_direct_x_manager_acd08cf2485a8a374353f12981bc65b17}{00053}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_direct_x_manager_acd08cf2485a8a374353f12981bc65b17}{keyS}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00054}\mbox{\hyperlink{class_direct_x_manager_a180f5e1bac584eb0a5a9f634c5d87697}{00054}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_direct_x_manager_a180f5e1bac584eb0a5a9f634c5d87697}{keyD}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_direct_x_manager_8h_source_l00055}00055\ \};}
+
+\end{DoxyCode}

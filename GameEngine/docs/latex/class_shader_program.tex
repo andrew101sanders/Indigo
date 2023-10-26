@@ -1,0 +1,227 @@
+\doxysection{Shader\+Program Class Reference}
+\hypertarget{class_shader_program}{}\label{class_shader_program}\index{ShaderProgram@{ShaderProgram}}
+
+
+{\ttfamily \#include $<$Shader\+Program.\+h$>$}
+
+
+
+Collaboration diagram for Shader\+Program\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{class_shader_program__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_shader_program_af86db792428fa75ed007e5239f3ae60e}{Shader\+Program}} (\mbox{\hyperlink{class_graphics_device}{Graphics\+Device}} \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{class_shader_program_af3ec23d94efb953563a5c02ad7595476}{graphics\+Device}})
+\item 
+void \mbox{\hyperlink{class_shader_program_a14f6d27e459534745935a25443a5eb1c}{Load\+Shader}} (LPCSTR VSFilename, LPCSTR PSFilename)
+\item 
+void \mbox{\hyperlink{class_shader_program_a3f8167a26230ab0c03fd229c634dbed6}{Clear\+Resources}} ()
+\item 
+void \mbox{\hyperlink{class_shader_program_a0495827219d2b682f0f255a4f11edba4}{Update\+Buffers}} (\mbox{\hyperlink{_shader_program_8h_struct_constant_buffer}{Constant\+Buffer}} cb)
+\item 
+void \mbox{\hyperlink{class_shader_program_a81f529e752b02a577c0cde465f401000}{Bind}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{class_shader_program_a36103195f14d296a331cb6424bbfe7d1}{Compile\+HLSL}} (const std\+::string \&filename, \mbox{\hyperlink{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46}{Shader\+Type}} shader\+Type)
+\item 
+std\+::vector$<$ byte $>$ \mbox{\hyperlink{class_shader_program_ae94d14696ac5bba6e5873153bb3242f2}{Load\+Shader\+File}} (const std\+::string \&filename, \mbox{\hyperlink{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46}{Shader\+Type}} shader\+Type)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+ID3\+D11\+Vertex\+Shader \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_shader_program_ac44d850b3493c78f0c90fffc474a7156}{vertex\+Shader}} = nullptr
+\item 
+ID3\+D11\+Pixel\+Shader \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_shader_program_a547c877088037bbe5af8eb513c5b64a7}{pixel\+Shader}} = nullptr
+\item 
+ID3\+D11\+Input\+Layout \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_shader_program_a937583a5ca9effe813d907d86dec47a5}{input\+Layout}} = nullptr
+\item 
+\mbox{\hyperlink{class_graphics_device}{Graphics\+Device}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_shader_program_af3ec23d94efb953563a5c02ad7595476}{graphics\+Device}} = nullptr
+\item 
+ID3\+D11\+Buffer \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_shader_program_ac0c720f1ad55ca655268a7244a2eeb43}{constant\+Buffer}} = nullptr
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8h_source_l00023}{23}} of file \mbox{\hyperlink{_shader_program_8h_source}{Shader\+Program.\+h}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_shader_program_af86db792428fa75ed007e5239f3ae60e}\label{class_shader_program_af86db792428fa75ed007e5239f3ae60e} 
+\index{ShaderProgram@{ShaderProgram}!ShaderProgram@{ShaderProgram}}
+\index{ShaderProgram@{ShaderProgram}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{ShaderProgram()}{ShaderProgram()}}
+{\footnotesize\ttfamily Shader\+Program\+::\+Shader\+Program (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_graphics_device}{Graphics\+Device}} \texorpdfstring{$\ast$}{*}}]{graphics\+Device }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8h_source_l00026}{26}} of file \mbox{\hyperlink{_shader_program_8h_source}{Shader\+Program.\+h}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_shader_program_a81f529e752b02a577c0cde465f401000}\label{class_shader_program_a81f529e752b02a577c0cde465f401000} 
+\index{ShaderProgram@{ShaderProgram}!Bind@{Bind}}
+\index{Bind@{Bind}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{Bind()}{Bind()}}
+{\footnotesize\ttfamily void Shader\+Program\+::\+Bind (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8cpp_source_l00071}{71}} of file \mbox{\hyperlink{_shader_program_8cpp_source}{Shader\+Program.\+cpp}}.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_shader_program_a81f529e752b02a577c0cde465f401000_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_shader_program_a3f8167a26230ab0c03fd229c634dbed6}\label{class_shader_program_a3f8167a26230ab0c03fd229c634dbed6} 
+\index{ShaderProgram@{ShaderProgram}!ClearResources@{ClearResources}}
+\index{ClearResources@{ClearResources}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{ClearResources()}{ClearResources()}}
+{\footnotesize\ttfamily void Shader\+Program\+::\+Clear\+Resources (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8cpp_source_l00036}{36}} of file \mbox{\hyperlink{_shader_program_8cpp_source}{Shader\+Program.\+cpp}}.
+
+\Hypertarget{class_shader_program_a36103195f14d296a331cb6424bbfe7d1}\label{class_shader_program_a36103195f14d296a331cb6424bbfe7d1} 
+\index{ShaderProgram@{ShaderProgram}!CompileHLSL@{CompileHLSL}}
+\index{CompileHLSL@{CompileHLSL}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{CompileHLSL()}{CompileHLSL()}}
+{\footnotesize\ttfamily bool Shader\+Program\+::\+Compile\+HLSL (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{\mbox{\hyperlink{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46}{Shader\+Type}}}]{shader\+Type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8cpp_source_l00078}{78}} of file \mbox{\hyperlink{_shader_program_8cpp_source}{Shader\+Program.\+cpp}}.
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_shader_program_a36103195f14d296a331cb6424bbfe7d1_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_shader_program_a14f6d27e459534745935a25443a5eb1c}\label{class_shader_program_a14f6d27e459534745935a25443a5eb1c} 
+\index{ShaderProgram@{ShaderProgram}!LoadShader@{LoadShader}}
+\index{LoadShader@{LoadShader}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{LoadShader()}{LoadShader()}}
+{\footnotesize\ttfamily void Shader\+Program\+::\+Load\+Shader (\begin{DoxyParamCaption}\item[{LPCSTR}]{VSFilename,  }\item[{LPCSTR}]{PSFilename }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8cpp_source_l00004}{4}} of file \mbox{\hyperlink{_shader_program_8cpp_source}{Shader\+Program.\+cpp}}.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_shader_program_a14f6d27e459534745935a25443a5eb1c_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_shader_program_ae94d14696ac5bba6e5873153bb3242f2}\label{class_shader_program_ae94d14696ac5bba6e5873153bb3242f2} 
+\index{ShaderProgram@{ShaderProgram}!LoadShaderFile@{LoadShaderFile}}
+\index{LoadShaderFile@{LoadShaderFile}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{LoadShaderFile()}{LoadShaderFile()}}
+{\footnotesize\ttfamily std\+::vector$<$ byte $>$ Shader\+Program\+::\+Load\+Shader\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{\mbox{\hyperlink{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46}{Shader\+Type}}}]{shader\+Type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8cpp_source_l00157}{157}} of file \mbox{\hyperlink{_shader_program_8cpp_source}{Shader\+Program.\+cpp}}.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_shader_program_ae94d14696ac5bba6e5873153bb3242f2_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_shader_program_ae94d14696ac5bba6e5873153bb3242f2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_shader_program_a0495827219d2b682f0f255a4f11edba4}\label{class_shader_program_a0495827219d2b682f0f255a4f11edba4} 
+\index{ShaderProgram@{ShaderProgram}!UpdateBuffers@{UpdateBuffers}}
+\index{UpdateBuffers@{UpdateBuffers}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{UpdateBuffers()}{UpdateBuffers()}}
+{\footnotesize\ttfamily void Shader\+Program\+::\+Update\+Buffers (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_shader_program_8h_struct_constant_buffer}{Constant\+Buffer}}}]{cb }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8cpp_source_l00064}{64}} of file \mbox{\hyperlink{_shader_program_8cpp_source}{Shader\+Program.\+cpp}}.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_shader_program_a0495827219d2b682f0f255a4f11edba4_cgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_shader_program_ac0c720f1ad55ca655268a7244a2eeb43}\label{class_shader_program_ac0c720f1ad55ca655268a7244a2eeb43} 
+\index{ShaderProgram@{ShaderProgram}!constantBuffer@{constantBuffer}}
+\index{constantBuffer@{constantBuffer}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{constantBuffer}{constantBuffer}}
+{\footnotesize\ttfamily ID3\+D11\+Buffer\texorpdfstring{$\ast$}{*} Shader\+Program\+::constant\+Buffer = nullptr\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8h_source_l00039}{39}} of file \mbox{\hyperlink{_shader_program_8h_source}{Shader\+Program.\+h}}.
+
+\Hypertarget{class_shader_program_af3ec23d94efb953563a5c02ad7595476}\label{class_shader_program_af3ec23d94efb953563a5c02ad7595476} 
+\index{ShaderProgram@{ShaderProgram}!graphicsDevice@{graphicsDevice}}
+\index{graphicsDevice@{graphicsDevice}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{graphicsDevice}{graphicsDevice}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_graphics_device}{Graphics\+Device}}\texorpdfstring{$\ast$}{*} Shader\+Program\+::graphics\+Device = nullptr\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8h_source_l00038}{38}} of file \mbox{\hyperlink{_shader_program_8h_source}{Shader\+Program.\+h}}.
+
+\Hypertarget{class_shader_program_a937583a5ca9effe813d907d86dec47a5}\label{class_shader_program_a937583a5ca9effe813d907d86dec47a5} 
+\index{ShaderProgram@{ShaderProgram}!inputLayout@{inputLayout}}
+\index{inputLayout@{inputLayout}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{inputLayout}{inputLayout}}
+{\footnotesize\ttfamily ID3\+D11\+Input\+Layout\texorpdfstring{$\ast$}{*} Shader\+Program\+::input\+Layout = nullptr\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8h_source_l00037}{37}} of file \mbox{\hyperlink{_shader_program_8h_source}{Shader\+Program.\+h}}.
+
+\Hypertarget{class_shader_program_a547c877088037bbe5af8eb513c5b64a7}\label{class_shader_program_a547c877088037bbe5af8eb513c5b64a7} 
+\index{ShaderProgram@{ShaderProgram}!pixelShader@{pixelShader}}
+\index{pixelShader@{pixelShader}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{pixelShader}{pixelShader}}
+{\footnotesize\ttfamily ID3\+D11\+Pixel\+Shader\texorpdfstring{$\ast$}{*} Shader\+Program\+::pixel\+Shader = nullptr\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8h_source_l00036}{36}} of file \mbox{\hyperlink{_shader_program_8h_source}{Shader\+Program.\+h}}.
+
+\Hypertarget{class_shader_program_ac44d850b3493c78f0c90fffc474a7156}\label{class_shader_program_ac44d850b3493c78f0c90fffc474a7156} 
+\index{ShaderProgram@{ShaderProgram}!vertexShader@{vertexShader}}
+\index{vertexShader@{vertexShader}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{vertexShader}{vertexShader}}
+{\footnotesize\ttfamily ID3\+D11\+Vertex\+Shader\texorpdfstring{$\ast$}{*} Shader\+Program\+::vertex\+Shader = nullptr\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8h_source_l00035}{35}} of file \mbox{\hyperlink{_shader_program_8h_source}{Shader\+Program.\+h}}.
+

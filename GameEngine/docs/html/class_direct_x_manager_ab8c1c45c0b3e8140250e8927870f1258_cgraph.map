@@ -1,0 +1,11 @@
+<map id="DirectXManager::handleMouseMove" name="DirectXManager::handleMouseMove">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,81,233,108"/>
+<area shape="rect" id="Node000002" href="$class_graphics_device.html#a28350dcab3e8059d360079f277649067" title=" " alt="" coords="302,5,483,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,78,280,41,311,33,313,39,281,47,162,83"/>
+<area shape="rect" id="Node000003" href="$class_graphics_device.html#afb2cef3f85e50972191d7b44e598493c" title=" " alt="" coords="281,56,504,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="233,81,265,78,265,84,233,87"/>
+<area shape="rect" id="Node000004" href="$class_graphics_device.html#a9ce4e3a7ea6a35ded13381fb7c55a027" title=" " alt="" coords="282,107,503,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="233,103,267,106,266,111,233,108"/>
+<area shape="rect" id="Node000005" href="$class_camera.html#ae8a25589ce2d2c2211f33dbeb4c640cf" title=" " alt="" coords="336,157,449,184"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="162,106,281,143,322,153,320,158,280,148,160,111"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="DirectXManager::handleLeftDown" name="DirectXManager::handleLeftDown">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,56,217,83"/>
+<area shape="rect" id="Node000002" href="$class_graphics_device.html#a28350dcab3e8059d360079f277649067" title=" " alt="" coords="286,5,467,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="184,53,287,33,288,38,185,58"/>
+<area shape="rect" id="Node000003" href="$class_graphics_device.html#afb2cef3f85e50972191d7b44e598493c" title=" " alt="" coords="265,56,488,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="217,67,249,67,249,72,217,72"/>
+<area shape="rect" id="Node000004" href="$class_graphics_device.html#a9ce4e3a7ea6a35ded13381fb7c55a027" title=" " alt="" coords="266,107,487,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="185,81,288,101,287,106,184,86"/>
+</map>

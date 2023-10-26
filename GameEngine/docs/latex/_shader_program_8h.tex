@@ -1,0 +1,124 @@
+\doxysection{src/\+Shader\+Program.h File Reference}
+\hypertarget{_shader_program_8h}{}\label{_shader_program_8h}\index{src/ShaderProgram.h@{src/ShaderProgram.h}}
+{\ttfamily \#include "{}Game\+Engine.\+h"{}}\newline
+Include dependency graph for Shader\+Program.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_shader_program_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_shader_program_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{_shader_program_8h_struct_constant_buffer}{Constant\+Buffer}}
+\item 
+class \mbox{\hyperlink{class_shader_program}{Shader\+Program}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46}{Shader\+Type}} \{ \mbox{\hyperlink{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46a63f069899614a9d92dd3c59d0aa97c91}{VERTEX\+\_\+\+SHADER}}
+, \mbox{\hyperlink{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46a279b3a8fd9f35e982c7c0e8733b1e66d}{PIXEL\+\_\+\+SHADER}}
+ \}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Class Documentation}
+\index{ConstantBuffer@{ConstantBuffer}}\label{struct_constant_buffer}
+\Hypertarget{_shader_program_8h_struct_constant_buffer}
+\doxysubsubsection{struct Constant\+Buffer}
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8h_source_l00005}{5}} of file \mbox{\hyperlink{_shader_program_8h_source}{Shader\+Program.\+h}}.
+
+
+
+Collaboration diagram for Constant\+Buffer\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=210pt]{struct_constant_buffer__coll__graph}
+\end{center}
+\end{figure}
+\begin{DoxyFields}{Class Members}
+\mbox{\Hypertarget{_shader_program_8h_a2ac359f409c0e65e51f8b863deb9340a}\label{_shader_program_8h_a2ac359f409c0e65e51f8b863deb9340a}} 
+XMFLOAT4&
+ColorA&
+\\
+\hline
+
+\mbox{\Hypertarget{_shader_program_8h_ad02912aa24bfe74d3533544e223903ab}\label{_shader_program_8h_ad02912aa24bfe74d3533544e223903ab}} 
+XMFLOAT4&
+ColorB&
+\\
+\hline
+
+\mbox{\Hypertarget{_shader_program_8h_a9fe75be4717b8f31c2a947945ab261e9}\label{_shader_program_8h_a9fe75be4717b8f31c2a947945ab261e9}} 
+float&
+padding\mbox{[}2\mbox{]}&
+\\
+\hline
+
+\mbox{\Hypertarget{_shader_program_8h_a4369b17bfe07e7500fef53dbed39a4eb}\label{_shader_program_8h_a4369b17bfe07e7500fef53dbed39a4eb}} 
+XMMATRIX&
+projection&
+\\
+\hline
+
+\mbox{\Hypertarget{_shader_program_8h_a3ac91552b21d024a6ae591049016781d}\label{_shader_program_8h_a3ac91552b21d024a6ae591049016781d}} 
+double&
+Time&
+\\
+\hline
+
+\mbox{\Hypertarget{_shader_program_8h_a2c927eb0fc88ce86b25f9e8d7d607961}\label{_shader_program_8h_a2c927eb0fc88ce86b25f9e8d7d607961}} 
+XMMATRIX&
+transformation&
+\\
+\hline
+
+\mbox{\Hypertarget{_shader_program_8h_a39515ad42fa58e3a7e65a9d39ceba16c}\label{_shader_program_8h_a39515ad42fa58e3a7e65a9d39ceba16c}} 
+XMMATRIX&
+view&
+\\
+\hline
+
+\mbox{\Hypertarget{_shader_program_8h_ac1306027f8cf23b997c75fd8f8681dd6}\label{_shader_program_8h_ac1306027f8cf23b997c75fd8f8681dd6}} 
+XMMATRIX&
+world&
+\\
+\hline
+
+\end{DoxyFields}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46}\label{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46} 
+\index{ShaderProgram.h@{ShaderProgram.h}!ShaderType@{ShaderType}}
+\index{ShaderType@{ShaderType}!ShaderProgram.h@{ShaderProgram.h}}
+\doxysubsubsection{\texorpdfstring{ShaderType}{ShaderType}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46}{Shader\+Type}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VERTEX\_SHADER@{VERTEX\_SHADER}!ShaderProgram.h@{ShaderProgram.h}}\index{ShaderProgram.h@{ShaderProgram.h}!VERTEX\_SHADER@{VERTEX\_SHADER}}}\Hypertarget{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46a63f069899614a9d92dd3c59d0aa97c91}\label{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46a63f069899614a9d92dd3c59d0aa97c91} 
+VERTEX\+\_\+\+SHADER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PIXEL\_SHADER@{PIXEL\_SHADER}!ShaderProgram.h@{ShaderProgram.h}}\index{ShaderProgram.h@{ShaderProgram.h}!PIXEL\_SHADER@{PIXEL\_SHADER}}}\Hypertarget{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46a279b3a8fd9f35e982c7c0e8733b1e66d}\label{_shader_program_8h_a6230e1b9ecbf2d82d10856fd7e1fde46a279b3a8fd9f35e982c7c0e8733b1e66d} 
+PIXEL\+\_\+\+SHADER&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \mbox{\hyperlink{_shader_program_8h_source_l00017}{17}} of file \mbox{\hyperlink{_shader_program_8h_source}{Shader\+Program.\+h}}.
+

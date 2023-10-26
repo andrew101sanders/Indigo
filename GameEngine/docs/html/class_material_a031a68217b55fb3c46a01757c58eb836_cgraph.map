@@ -1,0 +1,8 @@
+<map id="Material::Setup" name="Material::Setup">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,115,32"/>
+<area shape="rect" id="Node000002" href="$class_graphics_device.html#acf91316dd6fe685f48258016a3098d41" title=" " alt="" coords="363,5,586,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="115,16,347,16,347,21,115,21"/>
+<area shape="rect" id="Node000003" href="$class_render_state.html#a6a48845d14ec5b7b8728549178626ce4" title=" " alt="" coords="163,31,315,57"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="116,24,148,28,147,34,115,29"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="315,33,347,30,348,35,316,38"/>
+</map>

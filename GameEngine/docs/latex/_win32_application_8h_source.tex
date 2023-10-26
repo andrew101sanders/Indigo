@@ -1,0 +1,23 @@
+\doxysection{Win32\+Application.\+h}
+\hypertarget{_win32_application_8h_source}{}\label{_win32_application_8h_source}\index{src/Win32Application.h@{src/Win32Application.h}}
+\mbox{\hyperlink{_win32_application_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00001}00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00003}00003\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_game_engine_8h}{GameEngine.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00004}00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_direct_x_manager_8h}{DirectXManager.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00006}\mbox{\hyperlink{class_win32_application}{00006}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_win32_application}{Win32Application}}}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00007}00007\ \{}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00008}00008\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00009}00009\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_win32_application_a05c9e61b80735ab0b3fa576ebab260d6}{Initialize}}(HINSTANCE\ hInstance,\ \textcolor{keywordtype}{int}\ nCmdShow,\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{_game_engine_8cpp_a28a80955f4c5ad4e8fd20b9097c5efd8}{windowWidth}},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{_game_engine_8cpp_ae754d7bb4fcb4ce8d3fa3406786f9a8c}{windowHeight}});}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00010}00010\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_win32_application_a1d44083e5c10ac5faea4a4e0633898b6}{Run}}(\mbox{\hyperlink{class_direct_x_manager}{DirectXManager}}*\ pSample);}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00011}\mbox{\hyperlink{class_win32_application_a998822a640e56d38e51a4ffb580f5044}{00011}}\ \ \ \ \ \textcolor{keyword}{static}\ HWND\ \mbox{\hyperlink{class_win32_application_a998822a640e56d38e51a4ffb580f5044}{GetHwnd}}()\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_win32_application_a6fb6674f87517c43b51fefdc7e13e02c}{hWnd}};\ \}}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00012}00012\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00013}00013\ \ \ \ \ \textcolor{keyword}{static}\ LRESULT\ CALLBACK\ \mbox{\hyperlink{class_win32_application_ae0aa88d9449557e8772fc70c1043e55c}{WindowProc}}(HWND\ \mbox{\hyperlink{class_win32_application_a6fb6674f87517c43b51fefdc7e13e02c}{hWnd}},\ UINT\ message,\ WPARAM\ wParam,\ LPARAM\ lParam);}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00015}00015\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00016}\mbox{\hyperlink{class_win32_application_a6fb6674f87517c43b51fefdc7e13e02c}{00016}}\ \ \ \ \ \textcolor{keyword}{static}\ HWND\ \mbox{\hyperlink{class_win32_application_a6fb6674f87517c43b51fefdc7e13e02c}{hWnd}};}
+\DoxyCodeLine{\Hypertarget{_win32_application_8h_source_l00017}00017\ \};}
+
+\end{DoxyCode}

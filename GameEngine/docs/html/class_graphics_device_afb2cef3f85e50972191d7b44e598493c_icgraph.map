@@ -1,0 +1,14 @@
+<map id="GraphicsDevice::GetWindowHeight" name="GraphicsDevice::GetWindowHeight">
+<area shape="rect" id="Node000001" title=" " alt="" coords="887,31,1110,57"/>
+<area shape="rect" id="Node000002" href="$class_direct_x_manager.html#a4b6ab131def1de37e8af1f66dd64bf14" title=" " alt="" coords="619,5,831,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="871,35,831,31,831,26,871,30"/>
+<area shape="rect" id="Node000006" href="$class_direct_x_manager.html#ab8c1c45c0b3e8140250e8927870f1258" title=" " alt="" coords="611,56,839,83"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="871,58,839,61,839,56,871,53"/>
+<area shape="rect" id="Node000003" href="$class_win32_application.html#ae0aa88d9449557e8772fc70c1043e55c" title=" " alt="" coords="360,31,563,57"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="604,33,564,37,564,32,604,28"/>
+<area shape="rect" id="Node000004" href="$class_win32_application.html#a05c9e61b80735ab0b3fa576ebab260d6" title=" " alt="" coords="135,31,312,57"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="344,47,312,47,312,41,344,41"/>
+<area shape="rect" id="Node000005" href="$_game_engine_8cpp.html#a1e683c5a19c00d05cd803e46b805e339" title=" " alt="" coords="5,31,87,57"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="119,47,87,47,87,41,119,41"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="595,60,563,56,564,51,596,54"/>
+</map>

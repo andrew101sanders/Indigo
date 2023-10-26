@@ -1,0 +1,63 @@
+\doxysection{Game\+Engine.\+h}
+\hypertarget{_game_engine_8h_source}{}\label{_game_engine_8h_source}\index{src/GameEngine.h@{src/GameEngine.h}}
+\mbox{\hyperlink{_game_engine_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00001}00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00003}00003\ \textcolor{preprocessor}{\#include\ <SDKDDKVer.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00005}\mbox{\hyperlink{_game_engine_8h_ac7bef5d85e3dcd73eef56ad39ffc84a9}{00005}}\ \textcolor{preprocessor}{\#define\ WIN32\_LEAN\_AND\_MEAN\ \ \ \ \ \ \ \ \ \ \ \ \ }\textcolor{comment}{//\ Exclude\ rarely-\/used\ stuff\ from\ Windows\ headers}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00006}00006\ \textcolor{comment}{//\ Windows\ Header\ Files}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <windows.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00008}00008\ \textcolor{comment}{//\ C\ RunTime\ Header\ Files}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <stdlib.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <malloc.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <memory.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <tchar.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}resource.h"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00017}00017\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00018}00018\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00019}00019\ \textcolor{preprocessor}{\#include\ <filesystem>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00020}00020\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00021}00021\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00022}00022\ \textcolor{preprocessor}{\#include\ <assimp/Importer.hpp>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00023}00023\ \textcolor{preprocessor}{\#include\ <assimp/scene.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00024}00024\ \textcolor{preprocessor}{\#include\ <assimp/postprocess.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00025}00025\ \textcolor{preprocessor}{\#include\ <directxtk\(\backslash\)WICTextureLoader.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00026}00026\ \textcolor{preprocessor}{\#include\ <wincodec.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00027}00027\ \textcolor{preprocessor}{\#include\ "{}lodepng.h"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00029}00029\ \textcolor{preprocessor}{\#include\ <d3d11.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00030}00030\ \textcolor{preprocessor}{\#include\ <DirectXMath.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00031}00031\ \textcolor{preprocessor}{\#include\ <D3Dcompiler.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00032}00032\ \textcolor{preprocessor}{\#pragma\ comment\ (lib,\ "{}d3d11.lib"{})}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00033}00033\ \textcolor{preprocessor}{\#pragma\ comment\ (lib,\ "{}D3Dcompiler.lib"{})}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00035}00035\ \textcolor{comment}{//\ Direct2D\ Stuff}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00036}00036\ \textcolor{preprocessor}{\#include\ <d2d1\_2.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00037}00037\ \textcolor{preprocessor}{\#include\ <d2d1\_1.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00038}00038\ \textcolor{preprocessor}{\#include\ <d2d1.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00039}00039\ \textcolor{preprocessor}{\#include\ <dwrite.h>}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00041}00041\ \textcolor{preprocessor}{\#pragma\ comment\ (lib,\ "{}d2d1.lib"{})}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00042}00042\ \textcolor{preprocessor}{\#pragma\ comment(lib,\ "{}dwrite.lib"{})}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00047}00047\ \textcolor{keyword}{using\ namespace\ }DirectX;}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00049}00049\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_win32_application_8h}{Win32Application.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00050}00050\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_direct_x_manager_8h}{DirectXManager.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00051}00051\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_camera_8h}{Camera.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00052}00052\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_graphics_device_8h}{GraphicsDevice.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00053}00053\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_material_8h}{Material.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00054}00054\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_mesh_8h}{Mesh.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00055}00055\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_model_8h}{Model.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00056}00056\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_render_state_8h}{RenderState.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_game_engine_8h_source_l00057}00057\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_shader_program_8h}{ShaderProgram.h}}"{}}}
+
+\end{DoxyCode}

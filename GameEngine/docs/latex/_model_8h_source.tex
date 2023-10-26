@@ -1,0 +1,46 @@
+\doxysection{Model.\+h}
+\hypertarget{_model_8h_source}{}\label{_model_8h_source}\index{src/Model.h@{src/Model.h}}
+\mbox{\hyperlink{_model_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00001}00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00003}00003\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_game_engine_8h}{GameEngine.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00004}00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_material_8h}{Material.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00006}00006\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_mesh}{Mesh}};}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00008}\mbox{\hyperlink{class_model}{00008}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_model}{Model}}\ \{}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00009}00009\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00010}\mbox{\hyperlink{class_model}{00010}}\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{class_model_struct_model_1_1_mesh_entry}{MeshEntry}}\ \{}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00011}\mbox{\hyperlink{class_model_a0d68f1d679a3e52ad458c9f2d853dc75}{00011}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_mesh}{Mesh}}*\ \mbox{\hyperlink{class_model_a0d68f1d679a3e52ad458c9f2d853dc75}{mesh}};}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00012}\mbox{\hyperlink{class_model_ab044cb9fbaa00d1ad9d7d97e92f583c5}{00012}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_material}{Material}}*\ \mbox{\hyperlink{class_model_ab044cb9fbaa00d1ad9d7d97e92f583c5}{material}};}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00013}00013\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00015}\mbox{\hyperlink{class_model_a11612ce1ae5414a3b05b690ffb04f413}{00015}}\ \ \ \ \ \mbox{\hyperlink{class_model_a11612ce1ae5414a3b05b690ffb04f413}{Model}}(\ \mbox{\hyperlink{class_graphics_device}{GraphicsDevice}}*\ \mbox{\hyperlink{class_model_a189676e85804871c95e86b0db84fe78b}{graphicsDevice}}\ )\ :\ \mbox{\hyperlink{class_model_a189676e85804871c95e86b0db84fe78b}{graphicsDevice}}(\ \mbox{\hyperlink{class_model_a189676e85804871c95e86b0db84fe78b}{graphicsDevice}}\ )\ \{\}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00017}00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_model_a76e392c4b483303b4f750b11422a6b07}{AddMeshEntry}}(\ \mbox{\hyperlink{class_mesh}{Mesh}}*\ mesh,\ \mbox{\hyperlink{class_material}{Material}}*\ material\ );}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00018}00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_model_aad465ba03d1c753232c59a6c6747b18f}{SetPosition}}(\ \textcolor{keyword}{const}\ DirectX::XMFLOAT3\&\ pos\ );}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00019}00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_model_a57035d77f213ec90ebc355fd9c0d0e05}{SetRotation}}(\ \textcolor{keyword}{const}\ DirectX::XMFLOAT3\&\ rot\ );}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00020}00020\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_model_ac517047da883a877b300c13c2fce17d9}{SetScale}}(\ \textcolor{keyword}{const}\ DirectX::XMFLOAT3\&\ scl\ );}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00021}\mbox{\hyperlink{class_model_a6b49ef1c11dcd3cb6bfe1726ca007b21}{00021}}\ \ \ \ \ DirectX::XMFLOAT3\ \mbox{\hyperlink{class_model_a6b49ef1c11dcd3cb6bfe1726ca007b21}{GetPosition}}()\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_model_a3be4ecd5dc430ad7bae4f8183670063d}{position}};\ \}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00022}\mbox{\hyperlink{class_model_aab9306e732d231369056ab1fd913f911}{00022}}\ \ \ \ \ DirectX::XMFLOAT3\ \mbox{\hyperlink{class_model_aab9306e732d231369056ab1fd913f911}{GetRotation}}(\ )\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_model_a1a0b4041cd5cc7833a55fed013318e6a}{rotation}};\ \}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00023}\mbox{\hyperlink{class_model_ac1bc8af78c40fe41e4834ef01bb9a90e}{00023}}\ \ \ \ \ DirectX::XMFLOAT3\ \mbox{\hyperlink{class_model_ac1bc8af78c40fe41e4834ef01bb9a90e}{GetScale}}(\ )\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_model_a26e95d327ff90543771185e3d2da21e7}{scale}};\ \}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00024}00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_model_ade9b21ed1f4b5073186f4246d2727d9a}{UpdateTransformationMatrix}}();}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00025}00025\ \ \ \ \ XMMATRIX\ \mbox{\hyperlink{class_model_ae416dc1c473be023e26213ba793bf4ce}{GetTransformationMatrix}}();}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00026}00026\ \ \ \ \ \textcolor{comment}{//\ Functions\ to\ draw\ the\ model,\ set\ materials,\ etc.}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00027}\mbox{\hyperlink{class_model_a186f6681c1544e240439920cd50607c0}{00027}}\ \ \ \ \ std::vector<MeshEntry>\ \mbox{\hyperlink{class_model_a186f6681c1544e240439920cd50607c0}{GetMeshEntries}}()\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_model_ad1b23701c8888a50bfc8c3ff21fbcb63}{meshEntries}};\ \}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00029}00029\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00031}\mbox{\hyperlink{class_model_ad1b23701c8888a50bfc8c3ff21fbcb63}{00031}}\ \ \ \ \ std::vector<MeshEntry>\ \mbox{\hyperlink{class_model_ad1b23701c8888a50bfc8c3ff21fbcb63}{meshEntries}};}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00033}\mbox{\hyperlink{class_model_a3be4ecd5dc430ad7bae4f8183670063d}{00033}}\ \ \ \ \ DirectX::XMFLOAT3\ \mbox{\hyperlink{class_model_a3be4ecd5dc430ad7bae4f8183670063d}{position}}\{\ 0.0f,\ 0.0f,\ 0.0f\ \};}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00034}\mbox{\hyperlink{class_model_a1a0b4041cd5cc7833a55fed013318e6a}{00034}}\ \ \ \ \ DirectX::XMFLOAT3\ \mbox{\hyperlink{class_model_a1a0b4041cd5cc7833a55fed013318e6a}{rotation}}\{\ 0.0f,\ 0.0f,\ 0.0f\ \};\ \textcolor{comment}{//\ Represented\ as\ Euler\ angles\ in\ this\ example}}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00035}\mbox{\hyperlink{class_model_a26e95d327ff90543771185e3d2da21e7}{00035}}\ \ \ \ \ DirectX::XMFLOAT3\ \mbox{\hyperlink{class_model_a26e95d327ff90543771185e3d2da21e7}{scale}}\{\ 1.0f,\ 1.0f,\ 1.0f\ \};}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00037}\mbox{\hyperlink{class_model_a04f8d086e29308e62b4f93e6ac9048c9}{00037}}\ \ \ \ \ DirectX::XMMATRIX\ \mbox{\hyperlink{class_model_a04f8d086e29308e62b4f93e6ac9048c9}{transformationMatrix}}\ =\ XMMatrixIdentity();}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00039}\mbox{\hyperlink{class_model_a189676e85804871c95e86b0db84fe78b}{00039}}\ \ \ \ \ \mbox{\hyperlink{class_graphics_device}{GraphicsDevice}}*\ \mbox{\hyperlink{class_model_a189676e85804871c95e86b0db84fe78b}{graphicsDevice}};}
+\DoxyCodeLine{\Hypertarget{_model_8h_source_l00040}00040\ \};}
+
+\end{DoxyCode}

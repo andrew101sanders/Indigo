@@ -1,0 +1,358 @@
+\doxysection{Model Class Reference}
+\hypertarget{class_model}{}\label{class_model}\index{Model@{Model}}
+
+
+{\ttfamily \#include $<$Model.\+h$>$}
+
+
+
+Collaboration diagram for Model\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{class_model_struct_model_1_1_mesh_entry}{Mesh\+Entry}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_model_a11612ce1ae5414a3b05b690ffb04f413}{Model}} (\mbox{\hyperlink{class_graphics_device}{Graphics\+Device}} \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{class_model_a189676e85804871c95e86b0db84fe78b}{graphics\+Device}})
+\item 
+void \mbox{\hyperlink{class_model_a76e392c4b483303b4f750b11422a6b07}{Add\+Mesh\+Entry}} (\mbox{\hyperlink{class_mesh}{Mesh}} \texorpdfstring{$\ast$}{*}mesh, \mbox{\hyperlink{class_material}{Material}} \texorpdfstring{$\ast$}{*}material)
+\item 
+void \mbox{\hyperlink{class_model_aad465ba03d1c753232c59a6c6747b18f}{Set\+Position}} (const Direct\+X\+::\+XMFLOAT3 \&pos)
+\item 
+void \mbox{\hyperlink{class_model_a57035d77f213ec90ebc355fd9c0d0e05}{Set\+Rotation}} (const Direct\+X\+::\+XMFLOAT3 \&rot)
+\item 
+void \mbox{\hyperlink{class_model_ac517047da883a877b300c13c2fce17d9}{Set\+Scale}} (const Direct\+X\+::\+XMFLOAT3 \&scl)
+\item 
+Direct\+X\+::\+XMFLOAT3 \mbox{\hyperlink{class_model_a6b49ef1c11dcd3cb6bfe1726ca007b21}{Get\+Position}} ()
+\item 
+Direct\+X\+::\+XMFLOAT3 \mbox{\hyperlink{class_model_aab9306e732d231369056ab1fd913f911}{Get\+Rotation}} ()
+\item 
+Direct\+X\+::\+XMFLOAT3 \mbox{\hyperlink{class_model_ac1bc8af78c40fe41e4834ef01bb9a90e}{Get\+Scale}} ()
+\item 
+void \mbox{\hyperlink{class_model_ade9b21ed1f4b5073186f4246d2727d9a}{Update\+Transformation\+Matrix}} ()
+\item 
+XMMATRIX \mbox{\hyperlink{class_model_ae416dc1c473be023e26213ba793bf4ce}{Get\+Transformation\+Matrix}} ()
+\item 
+std\+::vector$<$ \mbox{\hyperlink{class_model_struct_model_1_1_mesh_entry}{Mesh\+Entry}} $>$ \mbox{\hyperlink{class_model_a186f6681c1544e240439920cd50607c0}{Get\+Mesh\+Entries}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{class_model_struct_model_1_1_mesh_entry}{Mesh\+Entry}} $>$ \mbox{\hyperlink{class_model_ad1b23701c8888a50bfc8c3ff21fbcb63}{mesh\+Entries}}
+\item 
+Direct\+X\+::\+XMFLOAT3 \mbox{\hyperlink{class_model_a3be4ecd5dc430ad7bae4f8183670063d}{position}} \{ 0.\+0f, 0.\+0f, 0.\+0f \}
+\item 
+Direct\+X\+::\+XMFLOAT3 \mbox{\hyperlink{class_model_a1a0b4041cd5cc7833a55fed013318e6a}{rotation}} \{ 0.\+0f, 0.\+0f, 0.\+0f \}
+\item 
+Direct\+X\+::\+XMFLOAT3 \mbox{\hyperlink{class_model_a26e95d327ff90543771185e3d2da21e7}{scale}} \{ 1.\+0f, 1.\+0f, 1.\+0f \}
+\item 
+Direct\+X\+::\+XMMATRIX \mbox{\hyperlink{class_model_a04f8d086e29308e62b4f93e6ac9048c9}{transformation\+Matrix}} = XMMatrix\+Identity()
+\item 
+\mbox{\hyperlink{class_graphics_device}{Graphics\+Device}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_model_a189676e85804871c95e86b0db84fe78b}{graphics\+Device}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00008}{8}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+
+
+\doxysubsection{Class Documentation}
+\index{Model::MeshEntry@{Model::MeshEntry}}\label{struct_model_1_1_mesh_entry}
+\Hypertarget{class_model_struct_model_1_1_mesh_entry}
+\doxysubsubsection{struct Model\+::Mesh\+Entry}
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00010}{10}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+
+
+Collaboration diagram for Model\+::Mesh\+Entry\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{struct_model_1_1_mesh_entry__coll__graph}
+\end{center}
+\end{figure}
+\begin{DoxyFields}{Class Members}
+\mbox{\Hypertarget{class_model_ab044cb9fbaa00d1ad9d7d97e92f583c5}\label{class_model_ab044cb9fbaa00d1ad9d7d97e92f583c5}} 
+\mbox{\hyperlink{class_material}{Material}} \texorpdfstring{$\ast$}{*}&
+material&
+\\
+\hline
+
+\mbox{\Hypertarget{class_model_a0d68f1d679a3e52ad458c9f2d853dc75}\label{class_model_a0d68f1d679a3e52ad458c9f2d853dc75}} 
+\mbox{\hyperlink{class_mesh}{Mesh}} \texorpdfstring{$\ast$}{*}&
+mesh&
+\\
+\hline
+
+\end{DoxyFields}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_model_a11612ce1ae5414a3b05b690ffb04f413}\label{class_model_a11612ce1ae5414a3b05b690ffb04f413} 
+\index{Model@{Model}!Model@{Model}}
+\index{Model@{Model}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{Model()}{Model()}}
+{\footnotesize\ttfamily Model\+::\+Model (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_graphics_device}{Graphics\+Device}} \texorpdfstring{$\ast$}{*}}]{graphics\+Device }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00015}{15}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_model_a76e392c4b483303b4f750b11422a6b07}\label{class_model_a76e392c4b483303b4f750b11422a6b07} 
+\index{Model@{Model}!AddMeshEntry@{AddMeshEntry}}
+\index{AddMeshEntry@{AddMeshEntry}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{AddMeshEntry()}{AddMeshEntry()}}
+{\footnotesize\ttfamily void Model\+::\+Add\+Mesh\+Entry (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_mesh}{Mesh}} \texorpdfstring{$\ast$}{*}}]{mesh,  }\item[{\mbox{\hyperlink{class_material}{Material}} \texorpdfstring{$\ast$}{*}}]{material }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8cpp_source_l00005}{5}} of file \mbox{\hyperlink{_model_8cpp_source}{Model.\+cpp}}.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=345pt]{class_model_a76e392c4b483303b4f750b11422a6b07_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_a76e392c4b483303b4f750b11422a6b07_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_model_a186f6681c1544e240439920cd50607c0}\label{class_model_a186f6681c1544e240439920cd50607c0} 
+\index{Model@{Model}!GetMeshEntries@{GetMeshEntries}}
+\index{GetMeshEntries@{GetMeshEntries}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{GetMeshEntries()}{GetMeshEntries()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{class_model_struct_model_1_1_mesh_entry}{Mesh\+Entry}} $>$ Model\+::\+Get\+Mesh\+Entries (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00027}{27}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_a186f6681c1544e240439920cd50607c0_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_model_a6b49ef1c11dcd3cb6bfe1726ca007b21}\label{class_model_a6b49ef1c11dcd3cb6bfe1726ca007b21} 
+\index{Model@{Model}!GetPosition@{GetPosition}}
+\index{GetPosition@{GetPosition}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{GetPosition()}{GetPosition()}}
+{\footnotesize\ttfamily Direct\+X\+::\+XMFLOAT3 Model\+::\+Get\+Position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00021}{21}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+\Hypertarget{class_model_aab9306e732d231369056ab1fd913f911}\label{class_model_aab9306e732d231369056ab1fd913f911} 
+\index{Model@{Model}!GetRotation@{GetRotation}}
+\index{GetRotation@{GetRotation}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{GetRotation()}{GetRotation()}}
+{\footnotesize\ttfamily Direct\+X\+::\+XMFLOAT3 Model\+::\+Get\+Rotation (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00022}{22}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+\Hypertarget{class_model_ac1bc8af78c40fe41e4834ef01bb9a90e}\label{class_model_ac1bc8af78c40fe41e4834ef01bb9a90e} 
+\index{Model@{Model}!GetScale@{GetScale}}
+\index{GetScale@{GetScale}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{GetScale()}{GetScale()}}
+{\footnotesize\ttfamily Direct\+X\+::\+XMFLOAT3 Model\+::\+Get\+Scale (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00023}{23}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+\Hypertarget{class_model_ae416dc1c473be023e26213ba793bf4ce}\label{class_model_ae416dc1c473be023e26213ba793bf4ce} 
+\index{Model@{Model}!GetTransformationMatrix@{GetTransformationMatrix}}
+\index{GetTransformationMatrix@{GetTransformationMatrix}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{GetTransformationMatrix()}{GetTransformationMatrix()}}
+{\footnotesize\ttfamily XMMATRIX Model\+::\+Get\+Transformation\+Matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8cpp_source_l00043}{43}} of file \mbox{\hyperlink{_model_8cpp_source}{Model.\+cpp}}.
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_ae416dc1c473be023e26213ba793bf4ce_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_model_aad465ba03d1c753232c59a6c6747b18f}\label{class_model_aad465ba03d1c753232c59a6c6747b18f} 
+\index{Model@{Model}!SetPosition@{SetPosition}}
+\index{SetPosition@{SetPosition}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{SetPosition()}{SetPosition()}}
+{\footnotesize\ttfamily void Model\+::\+Set\+Position (\begin{DoxyParamCaption}\item[{const Direct\+X\+::\+XMFLOAT3 \&}]{pos }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8cpp_source_l00014}{14}} of file \mbox{\hyperlink{_model_8cpp_source}{Model.\+cpp}}.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_aad465ba03d1c753232c59a6c6747b18f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_aad465ba03d1c753232c59a6c6747b18f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_model_a57035d77f213ec90ebc355fd9c0d0e05}\label{class_model_a57035d77f213ec90ebc355fd9c0d0e05} 
+\index{Model@{Model}!SetRotation@{SetRotation}}
+\index{SetRotation@{SetRotation}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{SetRotation()}{SetRotation()}}
+{\footnotesize\ttfamily void Model\+::\+Set\+Rotation (\begin{DoxyParamCaption}\item[{const Direct\+X\+::\+XMFLOAT3 \&}]{rot }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8cpp_source_l00020}{20}} of file \mbox{\hyperlink{_model_8cpp_source}{Model.\+cpp}}.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_a57035d77f213ec90ebc355fd9c0d0e05_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_a57035d77f213ec90ebc355fd9c0d0e05_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_model_ac517047da883a877b300c13c2fce17d9}\label{class_model_ac517047da883a877b300c13c2fce17d9} 
+\index{Model@{Model}!SetScale@{SetScale}}
+\index{SetScale@{SetScale}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{SetScale()}{SetScale()}}
+{\footnotesize\ttfamily void Model\+::\+Set\+Scale (\begin{DoxyParamCaption}\item[{const Direct\+X\+::\+XMFLOAT3 \&}]{scl }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8cpp_source_l00026}{26}} of file \mbox{\hyperlink{_model_8cpp_source}{Model.\+cpp}}.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_ac517047da883a877b300c13c2fce17d9_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_ac517047da883a877b300c13c2fce17d9_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{class_model_ade9b21ed1f4b5073186f4246d2727d9a}\label{class_model_ade9b21ed1f4b5073186f4246d2727d9a} 
+\index{Model@{Model}!UpdateTransformationMatrix@{UpdateTransformationMatrix}}
+\index{UpdateTransformationMatrix@{UpdateTransformationMatrix}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{UpdateTransformationMatrix()}{UpdateTransformationMatrix()}}
+{\footnotesize\ttfamily void Model\+::\+Update\+Transformation\+Matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8cpp_source_l00032}{32}} of file \mbox{\hyperlink{_model_8cpp_source}{Model.\+cpp}}.
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_model_ade9b21ed1f4b5073186f4246d2727d9a_icgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_model_a189676e85804871c95e86b0db84fe78b}\label{class_model_a189676e85804871c95e86b0db84fe78b} 
+\index{Model@{Model}!graphicsDevice@{graphicsDevice}}
+\index{graphicsDevice@{graphicsDevice}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{graphicsDevice}{graphicsDevice}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_graphics_device}{Graphics\+Device}}\texorpdfstring{$\ast$}{*} Model\+::graphics\+Device\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00039}{39}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+\Hypertarget{class_model_ad1b23701c8888a50bfc8c3ff21fbcb63}\label{class_model_ad1b23701c8888a50bfc8c3ff21fbcb63} 
+\index{Model@{Model}!meshEntries@{meshEntries}}
+\index{meshEntries@{meshEntries}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{meshEntries}{meshEntries}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{class_model_struct_model_1_1_mesh_entry}{Mesh\+Entry}}$>$ Model\+::mesh\+Entries\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00031}{31}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+\Hypertarget{class_model_a3be4ecd5dc430ad7bae4f8183670063d}\label{class_model_a3be4ecd5dc430ad7bae4f8183670063d} 
+\index{Model@{Model}!position@{position}}
+\index{position@{position}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{position}{position}}
+{\footnotesize\ttfamily Direct\+X\+::\+XMFLOAT3 Model\+::position \{ 0.\+0f, 0.\+0f, 0.\+0f \}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00033}{33}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+\Hypertarget{class_model_a1a0b4041cd5cc7833a55fed013318e6a}\label{class_model_a1a0b4041cd5cc7833a55fed013318e6a} 
+\index{Model@{Model}!rotation@{rotation}}
+\index{rotation@{rotation}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{rotation}{rotation}}
+{\footnotesize\ttfamily Direct\+X\+::\+XMFLOAT3 Model\+::rotation \{ 0.\+0f, 0.\+0f, 0.\+0f \}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00034}{34}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+\Hypertarget{class_model_a26e95d327ff90543771185e3d2da21e7}\label{class_model_a26e95d327ff90543771185e3d2da21e7} 
+\index{Model@{Model}!scale@{scale}}
+\index{scale@{scale}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{scale}{scale}}
+{\footnotesize\ttfamily Direct\+X\+::\+XMFLOAT3 Model\+::scale \{ 1.\+0f, 1.\+0f, 1.\+0f \}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00035}{35}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
+\Hypertarget{class_model_a04f8d086e29308e62b4f93e6ac9048c9}\label{class_model_a04f8d086e29308e62b4f93e6ac9048c9} 
+\index{Model@{Model}!transformationMatrix@{transformationMatrix}}
+\index{transformationMatrix@{transformationMatrix}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{transformationMatrix}{transformationMatrix}}
+{\footnotesize\ttfamily Direct\+X\+::\+XMMATRIX Model\+::transformation\+Matrix = XMMatrix\+Identity()\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{_model_8h_source_l00037}{37}} of file \mbox{\hyperlink{_model_8h_source}{Model.\+h}}.
+
