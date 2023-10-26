@@ -18,14 +18,20 @@ float4 PSmain(VSOut i) : SV_TARGET
     //}
     //return float4(i.normals * (i.positionLocal.y < (cos(Time))), 1);
     //if (isFrontFace) clip();
-    
+
     i.uv.y = i.uv.y * 2;
     bool removeTopAndBottom = (abs(i.normals.y) < .90);
     float xOffset = cos( i.uv.x * TAU * 8) * 0.1;
     float waves = cos( ( i.uv.y + xOffset + Time * .1 ) * TAU * 5) * 0.5 + 0.5;
     //return waves * removeTopAndBottom;
     float4 gradient = lerp(ColorA, ColorB, i.uv.y);
-    return gradient * waves * removeTopAndBottom;
+    bool corners = i.uv.y > .90 && i.uv.y < .999 || i.uv.y < .10 && i.uv.y > .0001;
+    float4 finalColor = gradient * waves * removeTopAndBottom;
+    if (corners)
+    {
+        finalColor = gradient * 2;
+    }
+    return  finalColor;
 
     //return float4(i.normals, 1)*removeTopAndBottom;
     //return float4(1.0, 0.0, 0.0, 1.0);

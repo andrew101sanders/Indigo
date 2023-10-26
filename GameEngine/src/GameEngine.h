@@ -19,7 +19,6 @@
 #include <filesystem>
 #include <sstream>
 #include <unordered_map>
-#include <directxtk\WICTextureLoader.h>
 #include <wincodec.h>
 
 #include "lodepng.h"
