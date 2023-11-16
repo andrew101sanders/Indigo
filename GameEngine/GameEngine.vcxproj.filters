@@ -57,6 +57,7 @@
     <None Include="assets\shaders\WaveyVS.hlsl" />
     <None Include="assets\shaders\ShaderCommon.hlsli" />
     <None Include="assets\shaders\BasicTextureVS.hlsl" />
+    <None Include="bin\GameEngine.exe" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\ErrorPS.hlsl" />

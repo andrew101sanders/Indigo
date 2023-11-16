@@ -27,4 +27,4 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     dxManager->Initialize(winapp.GetHwnd(), windowWidth, windowHeight);
     winapp.Run(dxManager);
 
-}
+} 
