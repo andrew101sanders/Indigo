@@ -1,7 +1,0 @@
-<map id="GraphicsDevice::Initialize" name="GraphicsDevice::Initialize">
-<area shape="rect" id="Node000001" title=" " alt="" coords="350,5,516,32"/>
-<area shape="rect" id="Node000002" href="$class_direct_x_manager.html#ac95cceb904d9893d0b135c2bd9039b33" title=" " alt="" coords="135,5,302,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="335,21,303,21,303,16,335,16"/>
-<area shape="rect" id="Node000003" href="$_game_engine_8cpp.html#a1e683c5a19c00d05cd803e46b805e339" title=" " alt="" coords="5,5,87,32"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="119,21,87,21,87,16,119,16"/>
-</map>

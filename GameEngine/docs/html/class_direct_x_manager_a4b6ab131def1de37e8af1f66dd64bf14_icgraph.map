@@ -1,9 +1,0 @@
-<map id="DirectXManager::handleLeftDown" name="DirectXManager::handleLeftDown">
-<area shape="rect" id="Node000001" title=" " alt="" coords="611,5,823,32"/>
-<area shape="rect" id="Node000002" href="$class_win32_application.html#ae0aa88d9449557e8772fc70c1043e55c" title=" " alt="" coords="360,5,563,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="595,21,564,21,564,16,595,16"/>
-<area shape="rect" id="Node000003" href="$class_win32_application.html#a05c9e61b80735ab0b3fa576ebab260d6" title=" " alt="" coords="135,5,312,32"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="344,21,312,21,312,16,344,16"/>
-<area shape="rect" id="Node000004" href="$_game_engine_8cpp.html#a1e683c5a19c00d05cd803e46b805e339" title=" " alt="" coords="5,5,87,32"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="119,21,87,21,87,16,119,16"/>
-</map>

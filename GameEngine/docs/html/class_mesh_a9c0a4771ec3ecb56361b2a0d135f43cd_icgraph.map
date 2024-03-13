@@ -1,9 +1,0 @@
-<map id="Mesh::SetParentModel" name="Mesh::SetParentModel">
-<area shape="rect" id="Node000001" title=" " alt="" coords="548,5,703,32"/>
-<area shape="rect" id="Node000002" href="$class_model.html#a76e392c4b483303b4f750b11422a6b07" title=" " alt="" coords="350,5,500,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="533,21,501,21,501,16,533,16"/>
-<area shape="rect" id="Node000003" href="$class_direct_x_manager.html#ac95cceb904d9893d0b135c2bd9039b33" title=" " alt="" coords="135,5,302,32"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="334,21,303,21,303,16,334,16"/>
-<area shape="rect" id="Node000004" href="$_game_engine_8cpp.html#a1e683c5a19c00d05cd803e46b805e339" title=" " alt="" coords="5,5,87,32"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="119,21,87,21,87,16,119,16"/>
-</map>

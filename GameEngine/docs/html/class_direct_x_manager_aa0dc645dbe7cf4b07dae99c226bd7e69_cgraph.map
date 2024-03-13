@@ -1,7 +1,0 @@
-<map id="DirectXManager::AddModel" name="DirectXManager::AddModel">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,184,57"/>
-<area shape="rect" id="Node000002" href="$class_model.html#a186f6681c1544e240439920cd50607c0" title=" " alt="" coords="246,5,404,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="184,32,230,26,231,32,184,37"/>
-<area shape="rect" id="Node000003" href="$class_material.html#a96434cf45f279c51bde30fb55e2706ac" title=" " alt="" coords="232,56,418,83"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="184,51,216,55,216,60,184,56"/>
-</map>
