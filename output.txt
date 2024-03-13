@@ -1,0 +1,2228 @@
+Camera.cpp:
+
+#include "pch.h"
+#include "Camera.h"
+
+void Camera::Initialize( int windowWidth, int windowHeight)
+{
+	SetViewport();
+	aspectRatio = (float)windowWidth / (float)windowHeight;
+
+	// Initialize and set View, Projection, and World Matrices
+	calculateV();
+
+	calculateP();
+	worldMatrix = XMMatrixIdentity();
+}
+
+void Camera::SetViewport()
+{
+	// Set Viewport
+	RECT winRect;
+	GetClientRect( graphicsDevice->GetHWND(), &winRect );
+	D3D11_VIEWPORT viewport = {
+		0.0f,
+		0.0f,
+		(FLOAT)(winRect.right - winRect.left),
+		(FLOAT)(winRect.bottom - winRect.top),
+		0.0f,
+		1.0f };
+	graphicsDevice->GetDeviceContext()->RSSetViewports( 1, &viewport );
+}
+
+void Camera::changeAspectRatio( float newAspectRatio )
+{
+	aspectRatio = newAspectRatio;
+	calculateP();
+}
+
+void Camera::AdjustFOV( float fovChangeFactor )
+{
+	// Convert FOV to radians
+	float fovInRadians = toRadians( fov );
+
+	// Adjust the FOV based on the zoom factor
+	fovInRadians += fovChangeFactor * toRadians( FOV_CHANGE_SPEED );
+
+	// Optional: Clamp the FOV to prevent it from becoming too narrow or too wide
+	fovInRadians = max( toRadians( 0.1f ), min( toRadians( 120.0f ), fovInRadians ) );
+
+	// Convert the clamped FOV back to degrees
+	fov = toDegrees( fovInRadians );
+
+	calculateP();
+}
+
+void Camera::Zoom( float zoomFactor )
+{
+	float speedMultiplier = 1.0f + std::fabs( cameraDistance ) * ZOOM_DISTANCE_FACTOR;
+	cameraDistance = std::clamp( cameraDistance + zoomFactor * ZOOM_CHANGE_SPEED * speedMultiplier, ZOOM_MIN, ZOOM_MAX );
+}
+
+
+void Camera::Rotate( int dx, int dy )
+{
+
+	theta -= dx * ROTATION_SPEED;
+
+	// Wrap theta around [0, 2*pi]
+	theta = fmodf( theta, XM_2PI );
+	if (theta < 0.0f) {  // handle negative values
+		theta += XM_2PI;
+	}
+
+	phi += dy * ROTATION_SPEED;
+	phi = max( epsilon, min( XM_PI - epsilon, phi ) );
+}
+
+void Camera::MoveCamera( float dx, float dy, float dz )
+{
+	// Calculate the forward, right, and up vectors
+	float x = sinf( phi ) * cosf( theta );
+	float y = cosf( phi );
+	float z = sinf( phi ) * sinf( theta );
+
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	XMVECTOR right = XMVector3Cross( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), forward ); // Right vector using world up
+	XMVECTOR up = XMVector3Cross( forward, right ); // Up vector
+
+	// Scale the movement based on the desired dx, dy, and dz
+	position += forward * dz;
+	position += right * dx;
+	position += up * dy;
+
+	calculateV(); // Recalculate the view matrix with the updated position
+}
+
+void Camera::stopMovement()
+{
+	movementDirection = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+}
+
+void Camera::moveForward()
+{
+	float sinPhi = sinf( phi );
+	float x = sinPhi * cosf( theta );
+	float y = 0.0f; // cosf( phi );
+	float z = sinPhi * sinf( theta );
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	movementDirection += forward;
+}
+
+void Camera::moveLeft()
+{
+	float sinPhi = sinf( phi );
+	float x = sinPhi * cosf( theta );
+	float y = 0.0f; // cosf( phi );
+	float z = sinPhi * sinf( theta );
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	XMVECTOR right = XMVector3Cross( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), forward );
+	movementDirection -= right;
+}
+
+void Camera::moveBackward(  )
+{
+	float sinPhi = sinf( phi );
+	float x = sinPhi * cosf( theta );
+	float y = 0.0f; // cosf( phi );
+	float z = sinPhi * sinf( theta );
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	movementDirection -= forward;
+}
+
+void Camera::moveRight(  )
+{
+	float sinPhi = sinf( phi );
+	float x = sinPhi * cosf( theta );
+	float y = 0.0f; // cosf( phi );
+	float z = sinPhi * sinf( theta );
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	XMVECTOR right = XMVector3Cross( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), forward );
+	movementDirection += right;
+}
+
+void Camera::Update( double deltaTime )
+{
+	float fdeltaTime = static_cast<float>(deltaTime);
+	movementDirection = XMVector3Normalize( movementDirection );
+
+	// Compute the target velocity based on the desired direction of movement.
+	XMVECTOR targetVelocity = movementDirection * MOVE_SPEED;
+
+	// Accelerate towards the target velocity
+	XMVECTOR accelerationVector = (targetVelocity - velocity) * acceleration;
+	velocity += accelerationVector * fdeltaTime;
+
+	// Apply drag to the velocity
+	velocity *= powf( dragFactor, fdeltaTime );
+
+	// Update camera position based on velocity
+	position += velocity * fdeltaTime;
+
+	calculateV();  // Update view matrix with new position.
+}
+
+
+void Camera::calculateP()
+{
+	// Recalculate the projection matrix with the new FOV
+	projectionMatrix = XMMatrixPerspectiveFovLH( toRadians( fov ), aspectRatio, nearPlane, farPlane );
+}
+
+void Camera::calculateV()
+{
+	// Calculate direction based on angles
+	XMVECTOR direction = XMVectorSet(
+		sinf( phi ) * cosf( theta ),
+		cosf( phi ),
+		sinf( phi ) * sinf( theta ),
+		0.0f
+	);
+
+	// Determine Eye and At positions based on distance
+	XMVECTOR Eye = position - direction * cameraDistance;
+	XMVECTOR At = position + direction;  // Always look forward
+
+	// Compute the view matrix
+	viewMatrix = XMMatrixLookAtLH( Eye, At, WORLD_UP );
+}
+
+
+
+Camera.h:
+
+#pragma once
+
+#include "GameEngine.h"
+#include "GraphicsDevice.h"
+
+class Camera
+{
+public:
+
+	float toRadians( float degrees ) {
+		return degrees * (3.14159265359f / 180.0f);
+	}
+
+	float toDegrees( float radians ) {
+		return radians * (180.0f / 3.14159265359f);
+	}
+	Camera (GraphicsDevice* graphicsDevice) : graphicsDevice( graphicsDevice ) {}
+
+	void Initialize( int windowWidth, int windowHeight);
+	void SetViewport();
+	void changeAspectRatio( float newAspectRatio );
+	void AdjustFOV( float fovChangeFactor );
+	void Zoom( float zoomFactor );
+	void Rotate( int dx, int dy );
+	void MoveCamera( float dx, float dy, float dz );
+	void stopMovement();
+	void moveForward(  );
+	void moveLeft(  );
+	void moveBackward(  );
+	void moveRight(  );
+	void Update( double deltaTime );
+	void calculateP();
+	void calculateV();
+
+	XMVECTOR getPosition() { return position; }
+	XMMATRIX getW() { return worldMatrix; }
+	XMMATRIX getV() { return viewMatrix; }
+	XMMATRIX getP() { return projectionMatrix; }
+
+private:
+	GraphicsDevice* graphicsDevice = nullptr;
+
+	const XMVECTOR WORLD_UP = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMVECTOR position = XMVectorSet( 0.0f, 0.0f, -10.0f, 1.0f );  // Default position
+	XMVECTOR forward = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	XMMATRIX worldMatrix;
+	XMMATRIX viewMatrix;
+	XMMATRIX projectionMatrix;
+
+	float nearPlane = 0.1f;
+	float farPlane = 1000.0f;
+	float fov = 60.0f;
+	const float FOV_CHANGE_SPEED = 3.0f;
+	const float ZOOM_CHANGE_SPEED = .15f;
+	const float ZOOM_MIN = 0.0f;
+	const float ZOOM_MAX = 200.0f;
+	const float ZOOM_DISTANCE_FACTOR = 0.4f;
+	float aspectRatio = 0.0;
+	float cameraDistance = 50.0f;
+
+	float theta = -1.5f * XM_PI; // horizontal angle
+	float phi = 1.8f;   // vertical angle
+	const float epsilon = 0.0001f; // Small offset to prevent camera from reaching limits
+	const float ROTATION_SPEED = 0.0005f; // Small offset to prevent camera from reaching limits
+
+	XMVECTOR velocity = XMVectorSet( 0, 0, 0, 0 );
+	XMVECTOR movementDirection = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	const float MOVE_SPEED = 20.0f;
+	const float acceleration = 5.0f;
+	const float dragFactor = 0.95f;
+};
+
+DirectXManager.cpp:
+
+#include "pch.h"
+#include "DirectXManager.h"
+
+
+void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
+{
+	QueryPerformanceFrequency( &frequency );
+	QueryPerformanceCounter( &startCounter );
+	QueryPerformanceCounter( &endCounter );
+
+	mainDevice = new GraphicsDevice();
+	mainDevice->Initialize( hWnd, windowWidth, windowHeight );
+	
+	// Load Shaders
+	shaderManager = new ShaderManager(mainDevice, "assets/shaders/");
+	std::shared_ptr<ShaderProgram> shaderProgramOpaque =			shaderManager->LoadShader( "BasicVS", "BasicPS" );
+	std::shared_ptr<ShaderProgram> testshaderProgramOpaque =		shaderManager->LoadShader( "BasicVS", "testPS" );
+	std::shared_ptr<ShaderProgram> shaderProgramOpaqueTextured =	shaderManager->LoadShader( "BasicTextureVS", "BasicTexturePS" );
+	std::shared_ptr<ShaderProgram> shaderProgramTransparent =		shaderManager->LoadShader( "BasicVS", "TransparentPS" );
+	std::shared_ptr<ShaderProgram> shaderProgramOpaqueWavey =		shaderManager->LoadShader( "WaveyVS", "BasicPS" );
+
+	// Load RenderStates
+	RenderState* renderStateOpaque = new RenderState( mainDevice );
+	D3D11_RASTERIZER_DESC rasterDesc{};
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	renderStateOpaque->CreateRasterizerState( rasterDesc );
+	D3D11_BLEND_DESC blendDesc{};
+	blendDesc.RenderTarget[0].BlendEnable = false;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	renderStateOpaque->CreateBlendState( blendDesc );
+	renderStateOpaque->CreateBlendFactor( 1.0f, 1.0f, 1.0f, 1.0f );
+	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	renderStateOpaque->CreateDepthStencilState( dsDesc );
+	D3D11_SAMPLER_DESC sampDesc = {};
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	renderStateOpaque->CreateSamplerState( sampDesc );
+
+	RenderState* renderStateTransparent = new RenderState( mainDevice );
+	D3D11_RASTERIZER_DESC rasterDesc2{};
+	rasterDesc2.CullMode = D3D11_CULL_NONE;
+	rasterDesc2.FillMode = D3D11_FILL_SOLID;
+	renderStateTransparent->CreateRasterizerState( rasterDesc2 );
+	D3D11_BLEND_DESC blendDesc2{};
+	blendDesc2.RenderTarget[0].BlendEnable = true;
+	blendDesc2.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDesc2.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendDesc2.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc2.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc2.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc2.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc2.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	renderStateTransparent->CreateBlendState( blendDesc2 );
+	renderStateTransparent->CreateBlendFactor( 0.0f, 0.0f, 0.0f, 0.0f );
+	D3D11_DEPTH_STENCIL_DESC dsDesc2 = {};
+	dsDesc2.DepthEnable = true;
+	dsDesc2.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;  // Disable depth writes
+	dsDesc2.DepthFunc = D3D11_COMPARISON_LESS;             // Typical depth test
+	renderStateTransparent->CreateDepthStencilState( dsDesc2 );
+
+	Material* materialOpaque, * materialTransparent, * materialOpaqueWavey, * materialOpaqueTextured, * materialOpaqueTextured2;
+	materialOpaque = new Material( mainDevice, shaderProgramOpaque, renderStateOpaque, false);
+	materialOpaqueWavey = new Material( mainDevice, shaderProgramOpaqueWavey, renderStateOpaque, false );
+	materialTransparent = new Material( mainDevice, shaderProgramTransparent, renderStateTransparent, true );
+	materialOpaqueTextured = new Material( mainDevice, shaderProgramOpaqueTextured, renderStateOpaque, false );
+	materialOpaqueTextured->LoadTexture( "cubePretty.glb" );
+	materialOpaqueTextured2 = new Material( mainDevice, shaderProgramOpaqueTextured, renderStateOpaque, false );
+	materialOpaqueTextured2->LoadTexture( "gun.glb" );
+
+
+	Model* model;
+
+	model = new Model( mainDevice );
+	model->AddMeshEntry( new Mesh( mainDevice, "planeWrinkly.glb" ), materialOpaqueWavey );
+	model->SetPosition( XMFLOAT3( 0.0f, -1.0f, 0.0f ) );
+	model->SetScale( XMFLOAT3( 100.0f, 1.0f, 100.0f ) );
+	AddModel( model );
+
+	model = new Model( mainDevice );
+	model->AddMeshEntry( new Mesh( mainDevice, "plane.glb" ), new Material( mainDevice, testshaderProgramOpaque, renderStateOpaque , false));
+	model->SetPosition( XMFLOAT3( 0.0f, 25.0f, 50.0f ) );
+	model->SetRotation( XMFLOAT3( -1.7f, 0.0f, 0.0f ) );
+	model->SetScale( XMFLOAT3( 48.0f, 1.0f, 27.0f ) );
+	AddModel( model );
+
+	model = new Model( mainDevice );
+	model->AddMeshEntry( new Mesh( mainDevice, "cube.glb" ), materialOpaque );
+	model->SetPosition( XMFLOAT3( 3.0f, 0.0f, 0.0f ) );
+	model->SetScale( XMFLOAT3( 1.0f, 1.0f, 0.2f ) );
+	model->SetRotation( XMFLOAT3( 1.5f, 0.0f, 0.0f ) );
+	AddModel( model );
+
+	model = new Model( mainDevice );
+	model->AddMeshEntry( new Mesh( mainDevice, "cubePretty.glb" ), materialOpaqueTextured );
+	model->SetPosition( XMFLOAT3( 0.0f, 0.0f, 0.0f ) );
+	model->SetScale( XMFLOAT3( 100.0f, 100.0f, 100.0f ) );
+	AddModel( model );
+
+	model = new Model( mainDevice );
+	model->AddMeshEntry( new Mesh( mainDevice, "gun.glb" ), materialOpaqueTextured2 );
+	model->SetPosition( XMFLOAT3( 0.0f, 0.5f, 0.0f ) );
+	model->SetScale( XMFLOAT3( 1.0f, 1.0f, 1.0f ) );
+	//AddModel( model );
+
+	model = new Model( mainDevice );
+	model->AddMeshEntry( new Mesh( mainDevice, "cylinderPretty.glb" ), materialTransparent );
+	AddModel( model );
+	mainControllableModel = model;
+
+	camera = new Camera(mainDevice);
+	camera->Initialize( windowWidth, windowHeight );
+}
+
+void DirectXManager::Update()
+{
+	QueryPerformanceCounter( &startCounter );
+	RenderFrame( totalTime );
+
+
+	//if (elapsedTime >= 0.1) {
+	//	UpdateGrid();
+	//	elapsedTime -= 0.1; // Reset or decrement the elapsed time by the time span you checked for, so you can check again in the next intervals.
+	//}
+
+	QueryPerformanceCounter( &endCounter );
+	frameTime = static_cast<double>(endCounter.QuadPart - startCounter.QuadPart) / frequency.QuadPart;
+	//elapsedTime += frameTime;
+	totalTime += frameTime; // Update the total time
+#ifdef _DEBUG
+	timeSinceLastShaderCheck += frameTime;
+	if (timeSinceLastShaderCheck >= 0.3) {  // Check every second
+
+		shaderManager->CheckForShaderUpdates();
+		timeSinceLastShaderCheck = 0.0; 
+	}
+#endif
+	camera->stopMovement();
+	if (keyW) {
+		camera->moveForward();
+	}
+	if (keyA) {
+		camera->moveLeft();
+	}
+	if (keyS) {
+		camera->moveBackward();
+	}
+	if (keyD) {
+		camera->moveRight();
+	}
+	camera->Update( frameTime );
+}
+
+void DirectXManager::RenderFrame( double totalTime )
+{
+	// Clear the back buffer to a deep blue
+	float color[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
+	mainDevice->GetDeviceContext()->ClearRenderTargetView( mainDevice->GetRenderTargetView(), color );
+	mainDevice->GetDeviceContext()->ClearDepthStencilView( mainDevice->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0 );
+
+	std::vector<std::pair<Mesh*, Material*>> transparentMeshes;
+
+	// First pass: Render opaque meshes and gather transparent meshes.
+	for (auto& shaderPair : shaderMaterialToMeshesMap)
+	{
+		std::shared_ptr<ShaderProgram> currentShader = shaderPair.first;
+		currentShader->Bind();
+
+		for (auto& materialPair : shaderPair.second)
+		{
+			Material* currentMaterial = materialPair.first;
+			currentMaterial->Setup();
+
+			if (currentMaterial->isTransparent())
+			{
+				for (auto& mesh : materialPair.second)
+				{
+					transparentMeshes.push_back( { mesh, currentMaterial } );
+				}
+				continue; // Skip this iteration and handle transparent meshes later
+			}
+
+			for (auto& mesh : materialPair.second)
+			{
+				ConstantBuffer cb{};
+				cb.Time = totalTime; // The time value you want to pass in
+				cb.transformation = XMMatrixTranspose( mesh->GetParentModel()->GetTransformationMatrix() );
+				cb.world = XMMatrixTranspose( camera->getW() ); // Transpose for HLSL
+				cb.view = XMMatrixTranspose( camera->getV() );
+				cb.projection = XMMatrixTranspose( camera->getP() );
+				cb.ColorA = XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f );
+				cb.ColorB = XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f );
+
+				currentMaterial->SetConstantBuffer( cb );
+				//XMFLOAT3 a = mesh->GetParentModel()->GetPosition();
+				//a.y = cos( (totalTime + a.x) * .2 ) * 10;
+				//mesh->GetParentModel()->SetPosition( a );
+				mesh->Draw();
+			}
+		}
+	}
+
+	// Sort the transparent meshes by distance from the camera (from farthest to closest).
+	std::sort( transparentMeshes.begin(), transparentMeshes.end(),
+		[&]( const std::pair<Mesh*, Material*>& a, const std::pair<Mesh*, Material*>& b ) -> bool {
+			const XMFLOAT3& tempPosA = a.first->GetParentModel()->GetPosition();
+			XMVECTOR posA = XMLoadFloat3( &tempPosA );
+
+			const XMFLOAT3& tempPosB = b.first->GetParentModel()->GetPosition();
+			XMVECTOR posB = XMLoadFloat3( &tempPosB );
+			XMVECTOR camPosition = camera->getPosition();
+
+			float distA = XMVectorGetX( XMVector3Length( camPosition - posA ) );
+			float distB = XMVectorGetX( XMVector3Length( camPosition - posB ) );
+
+			return distA > distB;
+		} );
+
+
+	// Render transparent meshes.
+	for (auto& pair : transparentMeshes)
+	{
+		Mesh* mesh = pair.first;
+		Material* currentMaterial = pair.second;
+		currentMaterial->GetShaderProgram()->Bind();
+		currentMaterial->Setup();
+
+		ConstantBuffer cb{};
+		cb.Time = totalTime; // The time value you want to pass in
+		cb.transformation = XMMatrixTranspose( mesh->GetParentModel()->GetTransformationMatrix() );
+		cb.world = XMMatrixTranspose( camera->getW() ); // Transpose for HLSL
+		cb.view = XMMatrixTranspose( camera->getV() );
+		cb.projection = XMMatrixTranspose( camera->getP() );
+		cb.ColorA = XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f );
+		cb.ColorB = XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f );
+
+		currentMaterial->SetConstantBuffer( cb );
+
+		mesh->Draw();
+	}
+	mainDevice->GetSwapChain()->Present( 1, 0 );
+
+	//ID2D1Factory1* d2dFactory = nullptr;
+	//ID2D1Device* d2dDevice = nullptr;
+	//ID2D1DeviceContext* d2dContext = nullptr;
+	//ID2D1Bitmap1* d2dTargetBitmap = nullptr;
+	//IDWriteFactory* dwFactory = nullptr;
+	//IDWriteTextFormat* textFormat = nullptr;
+
+	//D2D1CreateFactory( D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2dFactory );
+	//IDXGIDevice* dxgiDevice = nullptr;
+	//mainDevice->GetDevice()->QueryInterface( &dxgiDevice );
+	//d2dFactory->CreateDevice( dxgiDevice, &d2dDevice );
+	//d2dDevice->CreateDeviceContext( D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &d2dContext );
+	//IDXGISurface* dxgiBackBuffer = nullptr;
+	//mainDevice->GetSwapChain()->GetBuffer( 0, __uuidof(IDXGISurface), (void**)&dxgiBackBuffer );
+	//d2dContext->CreateBitmapFromDxgiSurface( dxgiBackBuffer, nullptr, &d2dTargetBitmap );
+	//d2dContext->SetTarget( d2dTargetBitmap );
+
+	//DWriteCreateFactory( DWRITE_FACTORY_TYPE_SHARED, __uuidof(dwFactory), reinterpret_cast<IUnknown**>(&dwFactory) );
+	//dwFactory->CreateTextFormat( L"Arial", nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 32.0f, L"", &textFormat );
+
+	//// Begin Direct2D drawing
+	//d2dContext->BeginDraw();
+	//d2dContext->Clear( D2D1::ColorF( D2D1::ColorF( 0.0f, 0.0f, 0.0f, 0.0f ) ) );
+	//ID2D1SolidColorBrush* brush = nullptr;
+	//d2dContext->CreateSolidColorBrush( D2D1::ColorF( D2D1::ColorF::White ), &brush );
+	//d2dContext->DrawTextW( L"Hello DirectX", wcslen( L"Hello DirectX" ), textFormat, D2D1::RectF( 100, 100, 600, 600 ), brush );
+	//d2dContext->EndDraw();
+
+}
+
+void DirectXManager::AddModel( Model* model ) {
+	for (auto& entry : model->GetMeshEntries()) {
+		Material* material = entry.material;
+		std::shared_ptr<ShaderProgram> shader = material->GetShaderProgram();
+
+		shaderMaterialToMeshesMap[shader][material].push_back( entry.mesh );
+	}
+}
+
+void DirectXManager::handleLeftDown( WPARAM wParam, LPARAM lParam )
+{
+
+	if (!isMouseCaptured)
+	{
+		SetCapture( mainDevice->GetHWND() );
+		ShowCursor( FALSE );  // Hide the cursor
+
+		// Lock the mouse to the center of the window
+		POINT center = { mainDevice->GetWindowWidth() / 2, mainDevice->GetWindowHeight() / 2 };
+		ClientToScreen( mainDevice->GetHWND(), &center );
+		SetCursorPos( center.x, center.y );
+
+		lastMousePos.x = center.x;
+		lastMousePos.y = center.y;
+
+		isMouseCaptured = true;
+	}
+	
+}
+
+void DirectXManager::handleLeftUp( LPARAM lParam )
+{
+
+}
+
+void DirectXManager::handleKeyDown( WPARAM wParam )
+{
+
+	switch (wParam)
+	{
+	case 'Q':
+	{
+		// If the model is currently scaled, reset it to original size.
+		mainControllableModel->SetScale( XMFLOAT3( 1.0f, 1.0f, 1.0f ) );
+		mainControllableModel->SetPosition( XMFLOAT3( 0.0f, 0.0f, 0.0f ) );
+		mainControllableModel->SetRotation( XMFLOAT3( 0.0f, 0.0f, 0.0f ) );
+		static float x = 0.0f;
+		static float z = 0.0f;
+		break;
+	}
+	case 'W': keyW = true; break;
+	case 'A': keyA = true; break;
+	case 'S': keyS = true; break;
+	case 'D': keyD = true; break;
+	case 'R':
+	{
+		break;
+	}
+	case VK_ESCAPE:
+	{
+		ReleaseCapture();
+		ShowCursor( TRUE );  // Show the cursor when window loses focus
+		isMouseCaptured = false;
+		break;
+	}
+	case VK_ADD:
+	{
+		float fovChangeFactor = 1.0f; // Convert to a zoom factor (-1.0 for down, 1.0 for up)
+		camera->AdjustFOV( fovChangeFactor );
+		break;
+	}
+	case VK_SUBTRACT:
+	{
+		float fovChangeFactor = -1.0f; // Convert to a zoom factor (-1.0 for down, 1.0 for up)
+		camera->AdjustFOV( fovChangeFactor );
+		break;
+	}
+	}
+}
+
+void DirectXManager::handleKeyUp( WPARAM wParam )
+{
+	switch (wParam) {
+	case 'W': keyW = false; break;
+	case 'A': keyA = false; break;
+	case 'S': keyS = false; break;
+	case 'D': keyD = false; break;
+	}
+}
+
+void DirectXManager::handleMouseMove( WPARAM wParam, LPARAM lParam )
+{
+	if (isMouseCaptured)
+	{
+		POINT currentMousePos;
+		GetCursorPos( &currentMousePos );
+
+		int dx = currentMousePos.x - lastMousePos.x;
+		int dy = currentMousePos.y - lastMousePos.y;
+
+		camera->Rotate( dx, dy );
+
+		// Re-center the cursor
+		POINT center = { mainDevice->GetWindowWidth() / 2, mainDevice->GetWindowHeight() / 2 };
+
+		ClientToScreen( mainDevice->GetHWND(), &center );
+		SetCursorPos( center.x, center.y );
+
+		lastMousePos.x = center.x;
+		lastMousePos.y = center.y;
+
+	}	
+}
+
+void DirectXManager::handleLostFocus(WPARAM wParam)
+{
+	if (LOWORD( wParam ) == WA_INACTIVE) // If the window is deactivated
+	{
+		if (isMouseCaptured)
+		{
+			ReleaseCapture();
+			ShowCursor( TRUE );  // Show the cursor when window loses focus
+			isMouseCaptured = false;
+		}
+	}
+
+}
+
+void DirectXManager::handleSetFocus()
+{
+#ifdef _DEBUG
+	shaderManager->CheckForShaderUpdates();
+	timeSinceLastShaderCheck = 0.0;
+#endif
+}
+
+void DirectXManager::handleMouseWheel( WPARAM wParam )
+{
+	int wheelDelta = GET_WHEEL_DELTA_WPARAM( wParam ); // Get the amount the wheel was rotated
+	float zoomFactor = -wheelDelta / (float)WHEEL_DELTA; // Convert to a zoom factor (-1.0 for down, 1.0 for up)
+	camera->Zoom( zoomFactor );
+
+}
+void DirectXManager::handleSize( LPARAM lParam )
+{
+	// Obtain the new size
+	int newWidth = LOWORD( lParam );
+	int newHeight = HIWORD( lParam );
+
+	// Resize back buffer, depth buffer, etc.
+	mainDevice->ResizeBuffersAndViews( newWidth, newHeight );
+
+	// Update aspect ratio and recreate projection matrix
+	float aspectRatio = static_cast<float>(newWidth) / static_cast<float>(newHeight);
+
+	camera->changeAspectRatio( aspectRatio );
+}
+
+
+DirectXManager.h:
+
+#pragma once
+
+#include "GameEngine.h"
+
+#include "Camera.h"
+#include "GraphicsDevice.h"
+#include "Mesh.h"
+#include "RenderState.h"
+#include "ShaderProgram.h"
+#include "ShaderManager.h"
+#include "Material.h"
+#include "Model.h"
+
+
+class DirectXManager
+{
+public:
+	void Initialize(HWND hWnd, int windowWidth, int windowHeight);
+	void Update();
+	void RenderFrame(double totalTime);
+	void AddModel( Model* model );
+
+	void handleLeftDown( WPARAM, LPARAM);
+	void handleLeftUp(LPARAM);
+	void handleKeyDown(WPARAM);
+	void handleKeyUp( WPARAM );
+	void handleMouseMove(WPARAM, LPARAM);
+	void handleLostFocus( WPARAM wParam );
+	void handleSetFocus();
+	void handleMouseWheel(WPARAM);
+	void handleSize(LPARAM);
+private:
+	GraphicsDevice *mainDevice;
+	ShaderManager* shaderManager;
+	std::unordered_map<std::shared_ptr<ShaderProgram>, std::unordered_map<Material*, std::vector<Mesh*>>> shaderMaterialToMeshesMap;
+
+#ifdef _DEBUG
+	double timeSinceLastShaderCheck = 0.0;
+#endif
+	Model* mainControllableModel = nullptr;
+
+	LARGE_INTEGER frequency, startCounter, endCounter;
+	double targetFrameRate = 60.0; // 60 FPS
+	double targetFrameTime = 1.0 / targetFrameRate; // Approx. 0.01667 seconds per frame
+	double elapsedTime = 0.0;
+	double totalTime = 0.0;
+	double frameTime = 0.0;
+	Camera* camera;
+	POINT lastMousePos; // Stores last known mouse position
+	bool isMouseCaptured = false;
+
+	bool keyW = false;
+	bool keyA = false;
+	bool keyS = false;
+	bool keyD = false;
+};
+
+GameEngine.cpp:
+
+// GameEngine.cpp : Defines the entry point for the application.
+//
+#include "pch.h"
+#include "GameEngine.h"
+
+#define CGLTF_IMPLEMENTATION
+#define CGLTF_WRITE_IMPLEMENTATION
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#include "cgltf_write.h"
+#include "cgltf.h"
+#pragma warning(pop)
+
+// Global Variables:
+const int windowWidth = 1600;
+const int windowHeight = 900;
+
+
+int APIENTRY wWinMain( _In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow )
+{
+	DirectXManager* dxManager = new DirectXManager();
+	Win32Application winapp;
+	winapp.Initialize( hInstance, nCmdShow, windowWidth, windowHeight );
+	dxManager->Initialize( winapp.GetHwnd(), windowWidth, windowHeight );
+	winapp.Run( dxManager );
+}
+
+GameEngine.h:
+
+#pragma once
+
+#include <SDKDDKVer.h>
+
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+// Windows Header Files
+#include <windows.h>
+// C RunTime Header Files
+#include <stdlib.h>
+#include <malloc.h>
+#include <memory.h>
+#include <tchar.h>
+
+#include "resource.h"
+#include <chrono>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+#include <sstream>
+#include <unordered_map>
+#include <wincodec.h>
+
+#include "lodepng.h"
+
+#include <d3d11.h>
+#include <DirectXMath.h>
+#include <D3Dcompiler.h>
+#pragma comment (lib, "d3d11.lib")
+#pragma comment (lib, "D3Dcompiler.lib")
+
+// Direct2D Stuff
+#include <d2d1_2.h>
+#include <d2d1_1.h>
+#include <d2d1.h>
+#include <dwrite.h>
+
+#pragma comment (lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
+
+using namespace DirectX;
+
+#include "Win32Application.h"
+#include "DirectXManager.h"
+#include "Camera.h"
+#include "GraphicsDevice.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "Model.h"
+#include "RenderState.h"
+#include "ShaderProgram.h"
+
+
+GraphicsDevice.cpp:
+
+#include "pch.h"
+#include "GraphicsDevice.h"
+
+void GraphicsDevice::Initialize(HWND hWnd, int width, int height)
+{
+    windowWidth = width;
+    windowHeight = height;
+    this->hWnd = hWnd;
+
+    // Init Swapchain
+    DXGI_SWAP_CHAIN_DESC swap_chain_descr = { 0 };
+    swap_chain_descr.BufferDesc.RefreshRate.Numerator = 0;
+    swap_chain_descr.BufferDesc.RefreshRate.Denominator = 1;
+    swap_chain_descr.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    swap_chain_descr.SampleDesc.Count = 1;
+    swap_chain_descr.SampleDesc.Quality = 0;
+    swap_chain_descr.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swap_chain_descr.BufferCount = 1;
+    swap_chain_descr.OutputWindow = hWnd;
+    swap_chain_descr.Windowed = true;
+
+    // Create device, deviceContext, and swap chain
+    D3D_FEATURE_LEVEL feature_level;
+    UINT flags = D3D11_CREATE_DEVICE_DEBUG;
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(
+        NULL,
+        D3D_DRIVER_TYPE_HARDWARE,
+        NULL,
+        flags,
+        NULL,
+        0,
+        D3D11_SDK_VERSION,
+        &swap_chain_descr,
+        &swapChain,
+        &device,
+        &feature_level,
+        &deviceContext);
+    assert(S_OK == hr && swapChain && device && deviceContext);
+
+    // Setup render target
+    ID3D11Texture2D* framebuffer{};
+    hr = swapChain->GetBuffer(
+        0,
+        __uuidof(ID3D11Texture2D),
+        (LPVOID*)&framebuffer);
+    assert(SUCCEEDED(hr));
+    hr = device->CreateRenderTargetView(
+        framebuffer, 0, &renderTargetView);
+    assert(SUCCEEDED(hr));
+    D3D11_TEXTURE2D_DESC backBufferDesc;
+    framebuffer->GetDesc(&backBufferDesc);
+    framebuffer->Release();
+
+    // DepthStencilBuffer and DepthStencilView Initialization
+    D3D11_TEXTURE2D_DESC depthBufferDesc = {};
+    depthBufferDesc.Width = windowWidth;  // Assuming you have width and height defined, adjust accordingly.
+    depthBufferDesc.Height = windowHeight;
+    depthBufferDesc.MipLevels = 1;
+    depthBufferDesc.ArraySize = 1;
+    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthBufferDesc.SampleDesc.Count = 1;
+    depthBufferDesc.SampleDesc.Quality = 0;
+    depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    depthBufferDesc.CPUAccessFlags = 0;
+    depthBufferDesc.MiscFlags = 0;
+
+    hr = device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
+    assert(SUCCEEDED(hr));
+
+    hr = device->CreateDepthStencilView(depthStencilBuffer, NULL, &depthStencilView);
+    assert(SUCCEEDED(hr));
+
+    deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+}
+
+void GraphicsDevice::ResizeBuffersAndViews(int width, int height)
+{
+    // Check for minimized window
+    if (width == 0 || height == 0)
+        return;
+
+    windowWidth = width;
+    windowHeight = height;
+    if (deviceContext && renderTargetView && depthStencilView)
+    {
+        // Release existing render target view
+        renderTargetView->Release();
+
+        // Release the old depth stencil view & buffer
+        depthStencilView->Release();
+        depthStencilBuffer->Release();
+
+        // Resize the swap chain's back buffer
+        swapChain->ResizeBuffers(0, windowWidth, windowHeight, DXGI_FORMAT_UNKNOWN, 0);
+
+        // Create a new render target view for the resized back buffer
+        ID3D11Texture2D* backBuffer = nullptr;
+        HRESULT hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+        if (SUCCEEDED(hr) && backBuffer)
+        {
+            hr = device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView);
+            assert(SUCCEEDED(hr)); // or handle the error appropriately
+            backBuffer->Release();
+        }
+        else
+        {
+            // Handle the error (logging, throwing an exception, etc.)
+            assert(false); // or your preferred error handling mechanism
+        }
+
+        // Set Viewport
+        RECT winRect;
+        GetClientRect(hWnd, &winRect);
+        D3D11_VIEWPORT viewport = {
+            0.0f,
+            0.0f,
+            (FLOAT)(winRect.right - winRect.left),
+            (FLOAT)(winRect.bottom - winRect.top),
+            0.0f,
+            1.0f };
+        deviceContext->RSSetViewports(1, &viewport);
+
+        D3D11_TEXTURE2D_DESC depthBufferDesc = {};
+        depthBufferDesc.Width = windowWidth;
+        depthBufferDesc.Height = windowHeight;
+        depthBufferDesc.MipLevels = 1;
+        depthBufferDesc.ArraySize = 1;
+        depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        depthBufferDesc.SampleDesc.Count = 1;
+        depthBufferDesc.SampleDesc.Quality = 0;
+        depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+        depthBufferDesc.CPUAccessFlags = 0;
+        depthBufferDesc.MiscFlags = 0;
+
+        hr = device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
+        assert(SUCCEEDED(hr));
+
+        hr = device->CreateDepthStencilView(depthStencilBuffer, NULL, &depthStencilView);
+        assert(SUCCEEDED(hr));
+
+        deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+    }
+}
+
+
+GraphicsDevice.h:
+
+#pragma once
+
+#include "GameEngine.h"
+
+class GraphicsDevice
+{
+public:
+
+	void Initialize(HWND hWnd, int width, int height);
+	void ResizeBuffersAndViews(int width, int height);
+	ID3D11Device* GetDevice() const { return device; }
+	ID3D11DeviceContext* GetDeviceContext() const { return deviceContext; }
+	IDXGISwapChain* GetSwapChain() const { return swapChain; }
+	ID3D11RenderTargetView* GetRenderTargetView() const { return renderTargetView; }
+	ID3D11DepthStencilView* GetDepthStencilView() const { return depthStencilView; }
+	int GetWindowWidth() { return windowWidth; }
+	int GetWindowHeight() { return windowHeight; }
+	HWND GetHWND() { return hWnd; };
+private:
+	ID3D11Device* device = nullptr;
+	ID3D11DeviceContext* deviceContext = nullptr;
+	IDXGISwapChain* swapChain = nullptr;
+	ID3D11RenderTargetView* renderTargetView = nullptr;
+
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	ID3D11Texture2D* depthStencilBuffer = nullptr;
+
+	int windowWidth;
+	int windowHeight;
+	HWND hWnd;
+
+};
+
+Material.cpp:
+
+#include "pch.h"
+#include "Material.h"
+#include "cgltf.h"
+
+void Material::LoadTexture( LPCSTR filenameIn ) {
+    std::string baseDir = "assets/meshes/";
+    std::string filename = baseDir + filenameIn;
+
+    // Load the glTF file using cgltf
+    cgltf_options options = {};
+    cgltf_data* data = NULL;
+    cgltf_result result = cgltf_parse_file( &options, filename.c_str(), &data );
+
+    if (result != cgltf_result_success) {
+        assert( false );
+        return;
+    }
+    result = cgltf_load_buffers( &options, data, filename.c_str() );
+    if (result != cgltf_result_success) {
+        assert( false );
+        cgltf_free( data );
+        return;
+    }
+
+    if (data->textures_count == 0) {
+        assert( false ); // No texture found in the glTF file
+        cgltf_free( data );
+        return;
+    }
+
+    cgltf_texture* tex = &data->textures[0]; // Assume we want the first texture
+    cgltf_image* img = tex->image;
+
+    std::vector<unsigned char> decodedImage;
+    unsigned width, height;
+
+    if (img->buffer_view) { // Texture is embedded
+
+        if (!img->buffer_view->buffer->data) {
+            assert( false ); // Buffer data not loaded
+            return;
+        }
+
+        size_t size = img->buffer_view->size;
+        const unsigned char* buffer = static_cast<const unsigned char*>(img->buffer_view->buffer->data) + img->buffer_view->offset;
+
+        unsigned error = lodepng::decode( decodedImage, width, height, buffer, size, LCT_RGBA, 8 );
+
+        if (error) {
+            assert( false ); // PNG decoding failed
+            cgltf_free( data );
+            return;
+        }
+    }
+    else if (img->uri) {
+        // Here you would load the texture from the URI (it might be a file path, or a data URI)
+        assert( false ); // URI-based textures are not handled in this example
+        cgltf_free( data );
+        return;
+    }
+    else {
+        assert( false ); // No image data found
+        cgltf_free( data );
+        return;
+    }
+
+    D3D11_TEXTURE2D_DESC texDesc = {};
+    texDesc.Width = width;
+    texDesc.Height = height;
+    texDesc.MipLevels = texDesc.ArraySize = 1;
+    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    texDesc.SampleDesc.Count = 1;
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+    texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = decodedImage.data();
+    initData.SysMemPitch = width * 4; // 4 bytes per pixel for RGBA
+
+    ID3D11Texture2D* texture2D = nullptr;
+    HRESULT hr = graphicsDevice->GetDevice()->CreateTexture2D( &texDesc, &initData, &texture2D );
+
+    if (FAILED( hr )) {
+        assert( false );
+        return;
+    }
+
+    hr = graphicsDevice->GetDevice()->CreateShaderResourceView( texture2D, nullptr, &textureSRV );
+    if (FAILED( hr )) {
+        assert( false );
+        return;
+    }
+
+    texture2D->Release();
+
+    // Free the cgltf data when done
+    cgltf_free( data );
+}
+
+void Material::SetConstantBuffer( ConstantBuffer cb )
+{
+
+    shader->UpdateBuffers( cb );
+
+}
+
+void Material::Setup()
+{
+
+    graphicsDevice->GetDeviceContext()->PSSetShaderResources( 0, 1, &textureSRV );
+
+    renderState->SetState();
+}
+
+
+
+Material.h:
+
+#pragma once
+
+#include "GameEngine.h"
+#include "ShaderProgram.h"
+#include "RenderState.h"
+
+class Material
+{
+public:
+	Material(GraphicsDevice* graphicsDevice, std::shared_ptr<ShaderProgram> shader, RenderState* renderState, bool transparent) :
+		graphicsDevice(graphicsDevice),
+		shader(shader),
+		renderState(renderState),
+		transparent(transparent) {}
+	void LoadTexture( LPCSTR filename );
+	void SetConstantBuffer(ConstantBuffer cb);
+	void Setup( );
+	bool isTransparent() { return transparent; }
+
+	std::shared_ptr<ShaderProgram> GetShaderProgram() const {	return shader;}
+	RenderState* GetRenderState() const {	return renderState;}
+private:
+	std::shared_ptr<ShaderProgram> shader = nullptr;
+	RenderState* renderState = nullptr;
+	GraphicsDevice* graphicsDevice = nullptr;
+	ID3D11ShaderResourceView* textureSRV = nullptr;
+	bool transparent = false;
+};
+
+Mesh.cpp:
+
+#include "pch.h"
+#include "Model.h"
+#include "Mesh.h"
+#include "cgltf.h"
+
+Mesh::Mesh(GraphicsDevice* graphicsDevice, LPCSTR filename)
+{
+    this->graphicsDevice = graphicsDevice;
+    LoadMesh(filename);
+}
+
+void Mesh::LoadMesh( LPCSTR filenameIn ) {
+    std::string baseDir = "assets/meshes/";
+    std::string filename = baseDir + filenameIn;
+
+    // Load the glTF file using cgltf
+    cgltf_options options = {};
+    cgltf_data* data = NULL;
+    cgltf_result result = cgltf_parse_file( &options, filename.c_str(), &data );
+
+    if (result != cgltf_result_success) {
+        assert( false );
+        return;
+    }
+
+    result = cgltf_load_buffers( &options, data, filename.c_str() );
+    if (result != cgltf_result_success) {
+        assert( false );
+        cgltf_free( data );
+        return;
+    }
+
+    if (data->meshes_count == 0) {
+        assert( false ); // No mesh found in the glTF file
+        cgltf_free( data );
+        return;
+    }
+
+    vertices.clear();
+    indices.clear();
+
+    for (int meshid = 0; meshid < data->meshes_count; ++meshid)
+    {
+        cgltf_mesh* mesh = &data->meshes[meshid]; // Assume we want the first mesh
+        cgltf_primitive* primitive = &mesh->primitives[0]; // Assume we want the first primitive
+
+        if (!primitive->attributes_count || !primitive->indices) {
+            assert( false ); // Primitive doesn't have vertices or indices
+            cgltf_free( data );
+            return;
+        }
+
+        // Load vertex data
+        for (size_t i = 0; i < primitive->attributes_count; i++) {
+            cgltf_attribute* attribute = &primitive->attributes[i];
+            cgltf_accessor* accessor = attribute->data;
+            cgltf_buffer_view* bufferView = accessor->buffer_view;
+            const char* bufferData = (char*)bufferView->buffer->data + bufferView->offset;
+
+            if (attribute->type == cgltf_attribute_type_position) {
+                for (size_t j = 0; j < accessor->count; j++) {
+                    float* vertex_data = (float*)(bufferData + accessor->stride * j);
+                    VertexType vertex{};
+                    vertex.position = DirectX::XMFLOAT4( vertex_data[0], vertex_data[1], vertex_data[2], 1 );
+                    vertices.push_back( vertex );
+                }
+            }
+            else if (attribute->type == cgltf_attribute_type_texcoord) {
+                for (size_t j = 0; j < accessor->count; j++) {
+                    float* texcoord_data = (float*)(bufferData + accessor->stride * j);
+                    vertices[j].texCoords = DirectX::XMFLOAT2( texcoord_data[0], texcoord_data[1] );
+                }
+            }
+            else if (attribute->type == cgltf_attribute_type_normal) {
+                for (size_t j = 0; j < accessor->count; j++) {
+                    float* normal_data = (float*)(bufferData + accessor->stride * j);
+                    vertices[j].normal = DirectX::XMFLOAT3( normal_data[0], normal_data[1], normal_data[2] );
+                }
+            }
+            // Add more cases if you need other attributes.
+        }
+
+        // Load index data
+        cgltf_accessor* indexAccessor = primitive->indices;
+        cgltf_buffer_view* indexBufferView = indexAccessor->buffer_view;
+        const char* indexBufferData = (char*)indexBufferView->buffer->data + indexBufferView->offset;
+
+        for (size_t i = 0; i < indexAccessor->count; i++) {
+            unsigned int index;
+            if (indexAccessor->component_type == cgltf_component_type_r_16u) {
+                index = *(unsigned short*)(indexBufferData + indexAccessor->stride * i);
+            }
+            else if (indexAccessor->component_type == cgltf_component_type_r_32u) {
+                index = *(unsigned int*)(indexBufferData + indexAccessor->stride * i);
+            }
+            else {
+                assert( false );  // Unsupported index type or handle other cases
+            }
+            indices.push_back( index );
+
+        }
+    }
+    
+    size_t bufferSize = sizeof(VertexType) * vertices.size();
+    assert(bufferSize <= UINT_MAX);  // Ensure the buffer size doesn't exceed the maximum value for UINT
+
+    // Create and fill vertex buffer
+    D3D11_BUFFER_DESC vertexBufferDesc = {};
+    vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    vertexBufferDesc.ByteWidth = static_cast<UINT>(bufferSize);
+    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA vertexData = {};
+    vertexData.pSysMem = vertices.data();
+
+    HRESULT hr = graphicsDevice->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
+    assert(SUCCEEDED(hr));
+
+    size_t indexBufferSize = sizeof(unsigned int) * indices.size();
+    assert(indexBufferSize <= UINT_MAX);  // Ensure the buffer size doesn't exceed the maximum value for UINT
+
+    // Create and fill index buffer
+    D3D11_BUFFER_DESC indexBufferDesc = {};
+    indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    indexBufferDesc.ByteWidth = static_cast<UINT>(indexBufferSize);
+    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA indexData = {};
+    indexData.pSysMem = indices.data();
+
+    hr = graphicsDevice->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
+    assert(SUCCEEDED(hr));
+    cgltf_free( data );
+
+}
+
+void Mesh::Draw()
+{
+    graphicsDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // Set Input Assembler
+    UINT vertexStride = sizeof(VertexType);
+    UINT vertexOffset = 0;
+    graphicsDevice->GetDeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &vertexOffset);
+    graphicsDevice->GetDeviceContext()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+    size_t numIndices = indices.size();
+    assert(numIndices <= UINT_MAX);  // Ensure the number of indices doesn't exceed the maximum value for UINT
+    graphicsDevice->GetDeviceContext()->DrawIndexed(static_cast<UINT>(numIndices), 0, 0);
+}
+
+
+Mesh.h:
+
+#pragma once
+
+#include "GameEngine.h"
+#include "GraphicsDevice.h"
+
+class Model;
+
+struct VertexType
+{
+	XMFLOAT4 position;
+	XMFLOAT2 texCoords; //uv
+	XMFLOAT3 normal;
+};
+
+class Mesh
+{
+public:
+	Mesh( GraphicsDevice* graphicsDevice, LPCSTR filename );
+	void SetParentModel( Model* model ) { parentModel = model; }
+
+	Model* GetParentModel() const { return parentModel; }
+	void LoadMesh( LPCSTR );
+	void Draw();
+private:
+	Model* parentModel = nullptr;
+	std::vector<VertexType> vertices;
+	std::vector<unsigned int> indices;
+
+	GraphicsDevice* graphicsDevice = nullptr;
+	ID3D11Buffer* vertexBuffer = nullptr;
+	ID3D11Buffer* indexBuffer = nullptr;
+};
+
+Model.cpp:
+
+#include "pch.h"
+#include "Model.h"
+#include "Mesh.h"
+
+void Model::AddMeshEntry(Mesh* mesh, Material* material)
+{
+    MeshEntry entry;
+    mesh->SetParentModel( this );
+    entry.mesh = mesh;
+    entry.material = material;
+    meshEntries.push_back(entry);
+}
+
+void Model::SetPosition(const DirectX::XMFLOAT3& pos)
+{
+    position = pos;
+    UpdateTransformationMatrix();
+}
+
+void Model::SetRotation(const DirectX::XMFLOAT3& rot)
+{
+    rotation = rot;
+    UpdateTransformationMatrix();
+}
+
+void Model::SetScale(const DirectX::XMFLOAT3& scl)
+{
+    scale = scl;
+    UpdateTransformationMatrix();
+}
+
+void Model::UpdateTransformationMatrix()
+{
+    // Create individual matrices
+    DirectX::XMMATRIX matScale = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+    DirectX::XMMATRIX matRotate = DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+    DirectX::XMMATRIX matTranslate = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+
+    // Combine them to get the final transformation matrix
+    transformationMatrix = matScale * matRotate * matTranslate;
+}
+
+XMMATRIX Model::GetTransformationMatrix()
+{
+    return transformationMatrix;
+}
+
+
+
+Model.h:
+
+#pragma once
+
+#include "GameEngine.h"
+#include "GraphicsDevice.h"
+#include "Material.h"
+
+class Mesh;
+
+class Model {
+public:
+	struct MeshEntry {
+		Mesh* mesh;
+		Material* material;
+	};
+
+	Model( GraphicsDevice* graphicsDevice ) : graphicsDevice( graphicsDevice ) {}
+
+	void AddMeshEntry( Mesh* mesh, Material* material );
+	void SetPosition( const DirectX::XMFLOAT3& pos );
+	void SetRotation( const DirectX::XMFLOAT3& rot );
+	void SetScale( const DirectX::XMFLOAT3& scl );
+	DirectX::XMFLOAT3 GetPosition() { return position; }
+	DirectX::XMFLOAT3 GetRotation( ) { return rotation; }
+	DirectX::XMFLOAT3 GetScale( ) { return scale; }
+	void UpdateTransformationMatrix();
+	XMMATRIX GetTransformationMatrix();
+	// Functions to draw the model, set materials, etc.
+	std::vector<MeshEntry> GetMeshEntries() { return meshEntries; }
+
+private:
+
+	std::vector<MeshEntry> meshEntries;
+
+	DirectX::XMFLOAT3 position{ 0.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT3 rotation{ 0.0f, 0.0f, 0.0f }; // Represented as Euler angles in this example
+	DirectX::XMFLOAT3 scale{ 1.0f, 1.0f, 1.0f };
+
+	DirectX::XMMATRIX transformationMatrix = XMMatrixIdentity();
+
+	GraphicsDevice* graphicsDevice;
+};
+
+pch.cpp:
+
+// pch.cpp: source file corresponding to the pre-compiled header
+
+#include "pch.h"
+
+// When you are using pre-compiled headers, this source file is necessary for compilation to succeed.
+
+
+pch.h:
+
+// pch.h: This is a precompiled header file.
+// Files listed below are compiled only once, improving build performance for future builds.
+// This also affects IntelliSense performance, including code completion and many code browsing features.
+// However, files listed here are ALL re-compiled if any one of them is updated between builds.
+// Do not add files here that you will be updating frequently as this negates the performance advantage.
+
+#ifndef PCH_H
+#define PCH_H
+
+// add headers that you want to pre-compile here
+#include "GameEngine.h"
+
+#endif //PCH_H
+
+
+RenderState.cpp:
+
+#include "pch.h"
+#include "RenderState.h"
+
+RenderState::~RenderState()
+{
+	if (rasterizerState) rasterizerState->Release();
+	if (blendState) blendState->Release();
+	if (depthStencilState) depthStencilState->Release();
+}
+
+void RenderState::CreateRasterizerState( const D3D11_RASTERIZER_DESC& rasterDesc )
+{
+	HRESULT hr = graphicsDevice->GetDevice()->CreateRasterizerState( &rasterDesc, &rasterizerState );
+	if (FAILED( hr )) {
+		assert( false );
+	}
+}
+
+void RenderState::CreateBlendState( const D3D11_BLEND_DESC& blendDesc )
+{
+	HRESULT hr = graphicsDevice->GetDevice()->CreateBlendState( &blendDesc, &blendState );
+	if (FAILED( hr )) {
+		assert( false );
+	}
+}
+
+void RenderState::CreateBlendFactor( float f1, float f2, float f3, float f4 )
+{
+	blendFactor[0] = f1;
+	blendFactor[1] = f2;
+	blendFactor[2] = f3;
+	blendFactor[3] = f4;
+}
+
+void RenderState::CreateDepthStencilState( const D3D11_DEPTH_STENCIL_DESC& dsDesc )
+{
+	HRESULT hr = graphicsDevice->GetDevice()->CreateDepthStencilState( &dsDesc, &depthStencilState );
+	if (FAILED( hr )) {
+		assert( false );
+	}
+}
+
+void RenderState::CreateSamplerState( const D3D11_SAMPLER_DESC& sampDesc )
+{
+	HRESULT hr = graphicsDevice->GetDevice()->CreateSamplerState( &sampDesc, &samplerState );
+	if (FAILED( hr )) {
+		assert( false );
+	}
+
+}
+
+void RenderState::SetState()
+{
+
+	graphicsDevice->GetDeviceContext()->PSSetSamplers( 0, 1, &samplerState );
+
+	graphicsDevice->GetDeviceContext()->RSSetState( rasterizerState );
+	graphicsDevice->GetDeviceContext()->OMSetBlendState( blendState, blendFactor, 0xffffffff );
+	graphicsDevice->GetDeviceContext()->OMSetDepthStencilState( depthStencilState, 0 );
+}
+
+RenderState.h:
+
+#pragma once
+
+#include "GameEngine.h"
+
+class RenderState
+{
+public:
+	RenderState(GraphicsDevice* graphicsDevice) : graphicsDevice(graphicsDevice) {}
+	~RenderState();
+
+	void CreateRasterizerState(const D3D11_RASTERIZER_DESC& rasterDesc);
+	void CreateBlendState(const D3D11_BLEND_DESC& blendDesc);
+	void CreateBlendFactor(float, float, float, float);
+	void CreateDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& dsDesc);
+	void CreateSamplerState( const D3D11_SAMPLER_DESC& sampDesc );
+
+	void SetState();
+
+private:
+	ID3D11RasterizerState* rasterizerState = nullptr;
+	ID3D11BlendState* blendState = nullptr;
+	ID3D11DepthStencilState* depthStencilState = nullptr;
+	ID3D11SamplerState* samplerState = nullptr;
+
+	float blendFactor[4] = { 1.f, 1.f, 1.f, 1.f};
+	GraphicsDevice* graphicsDevice = nullptr;
+};
+
+Scene.cpp:
+
+#include "pch.h"
+#include "Scene.h"
+
+void Scene::LoadFromFile( const std::string& filepath )
+{
+}
+
+
+Scene.h:
+
+#pragma once
+
+#include "GameEngine.h"
+
+class Scene {
+public:
+    void LoadFromFile( const std::string& filepath );
+private:
+    std::vector<Model> models;
+};
+
+ShaderManager.cpp:
+
+#include "pch.h"
+#include "ShaderManager.h"
+
+
+namespace fs = std::filesystem;
+
+#ifdef _DEBUG
+const std::string pathPrefix = "../";
+#else
+const std::string pathPrefix = "";
+#endif
+
+ShaderManager::ShaderManager( GraphicsDevice* device, const std::string& directory )
+    : device( device ), shaderDirectory( directory )
+{
+}
+
+ShaderManager::~ShaderManager()
+{
+    // Cleanup if necessary
+    // If using smart pointers like shared_ptr, explicit cleanup might not be necessary here
+    shaders.clear();
+}
+
+std::shared_ptr<ShaderProgram> ShaderManager::LoadShader( const std::string& vsName, const std::string& psName )
+{
+    std::string key = GenerateShaderKey( vsName, psName );
+
+    // Check if the shader is already loaded
+    auto it = shaders.find( key );
+    if (it != shaders.end())
+    {
+        return it->second.shaderProgram;
+    }
+
+    // Load and compile the shader
+    auto shader = std::make_shared<ShaderProgram>( device );
+    shader->LoadShader( vsName.c_str(), psName.c_str() );
+
+    // Get the last write time for the shaders
+    std::filesystem::path vsPath = pathPrefix + shaderDirectory + "/" + vsName + ".hlsl";
+    std::filesystem::path psPath = pathPrefix + shaderDirectory + "/" + psName + ".hlsl";
+    auto lastWriteTime = max( std::filesystem::last_write_time( vsPath ), std::filesystem::last_write_time( psPath ) );
+
+    // Store the shader and its last write time in the map
+    ShaderInfo info;
+    info.shaderProgram = shader;
+    info.lastWriteTime = lastWriteTime;
+    shaders[key] = info;
+
+    return shader;
+}
+
+
+void ShaderManager::ReloadShader( const std::string& vsName, const std::string& psName )
+{
+    std::string key = GenerateShaderKey( vsName, psName );
+
+    // Check if the shader exists in the map
+    auto it = shaders.find( key );
+    if (it != shaders.end())
+    {
+        // Clear the resources of the old shader
+        it->second.shaderProgram->ClearResources();
+
+        // Load and recompile the shader
+        it->second.shaderProgram->LoadShader( vsName.c_str(), psName.c_str() );
+    }
+    else
+    {
+        // If not found, simply load the new shader
+        LoadShader( vsName, psName );
+    }
+}
+
+
+void ShaderManager::CheckForShaderUpdates()
+{
+    for (auto& [key, shaderInfo] : shaders)
+    {
+        // Derive filenames from the key
+        size_t separatorPos = key.find( '_' );
+        if (separatorPos == std::string::npos)
+        {
+            // This is unexpected and probably an error in key formation.
+            continue;
+        }
+
+        std::string vsName = key.substr( 0, separatorPos ) + ".hlsl";
+        std::string psName = key.substr( separatorPos + 1 ) + ".hlsl";
+
+        // Construct the full paths
+        std::filesystem::path vsPath = pathPrefix + shaderDirectory + "/" + vsName;
+        std::filesystem::path psPath = pathPrefix + shaderDirectory + "/" + psName;
+
+        // Get the current write times for the shaders
+        auto currentVsWriteTime = std::filesystem::last_write_time( vsPath );
+        auto currentPsWriteTime = std::filesystem::last_write_time( psPath );
+
+        // If either of the shaders has been modified since it was last loaded, reload it
+        if (currentVsWriteTime > shaderInfo.lastWriteTime || currentPsWriteTime > shaderInfo.lastWriteTime)
+        {
+            std::string vsNameWithoutExtension = key.substr( 0, separatorPos );
+            std::string psNameWithoutExtension = key.substr( separatorPos + 1 );
+
+            // 1. Delete the .cso file from shadercache
+            std::filesystem::path vsCsoPath = "assets/shaders/shadercache/" + vsNameWithoutExtension + ".cso";
+            std::filesystem::path psCsoPath = "assets/shaders/shadercache/" + psNameWithoutExtension + ".cso";
+            std::filesystem::remove( vsCsoPath );
+            std::filesystem::remove( psCsoPath );
+
+            // 2. Delete the .hlsl file from /assets/shaders/
+            std::filesystem::path binVsPath = "assets/shaders/" + vsNameWithoutExtension + ".hlsl";
+            std::filesystem::path binPsPath = "assets/shaders/" + psNameWithoutExtension + ".hlsl";
+            std::filesystem::remove( binVsPath );
+            std::filesystem::remove( binPsPath );
+
+            // 3. Copy the .hlsl file from /assets/shaders/ to /assets/shaders/
+            std::filesystem::path srcVsPath = "../assets/shaders/" + vsNameWithoutExtension + ".hlsl";
+            std::filesystem::path srcPsPath = "../assets/shaders/" + psNameWithoutExtension + ".hlsl";
+            std::filesystem::copy( srcVsPath, binVsPath );
+            std::filesystem::copy( srcPsPath, binPsPath );
+
+            // Reload the shader
+            ReloadShader( vsNameWithoutExtension, psNameWithoutExtension );
+
+            // Update the last write time
+            shaderInfo.lastWriteTime = max( currentVsWriteTime, currentPsWriteTime );
+        }
+    }
+}
+
+
+std::string ShaderManager::GenerateShaderKey( const std::string& vsName, const std::string& psName )
+{
+    return vsName + "_" + psName;
+}
+
+ShaderManager.h:
+
+#pragma once
+
+#include "GameEngine.h"
+
+class ShaderManager
+{
+public:
+    explicit ShaderManager( GraphicsDevice* device, const std::string& directory );
+    ~ShaderManager();
+
+    // Load a shader. If already loaded, returns the existing one.
+    std::shared_ptr<ShaderProgram> LoadShader( const std::string& vsName, const std::string& psName );
+
+    // Reload a specific shader. Can be used for hot-reloading.
+    void ReloadShader( const std::string& vsName, const std::string& psName );
+    void CheckForShaderUpdates();
+    // Optional: Implement these to integrate with a file watcher for hot-reloading.
+    // void StartWatching();
+    // void StopWatching();
+
+private:
+    struct ShaderInfo {
+        std::shared_ptr<ShaderProgram> shaderProgram;
+        std::filesystem::file_time_type lastWriteTime;
+    };
+    GraphicsDevice* device;
+    std::string shaderDirectory;
+    std::unordered_map<std::string, ShaderInfo> shaders;
+
+    // Generate a unique key for the shader combination for internal use.
+    std::string GenerateShaderKey( const std::string& vsName, const std::string& psName );
+
+    // Optional: Callback when a file changes. Used for hot-reloading.
+    // void OnShaderFileChanged(const std::string& filename);
+};
+
+
+
+ShaderProgram.cpp:
+
+#include "pch.h"
+#include "ShaderProgram.h"
+
+void ShaderProgram::LoadShader( LPCSTR VSFilename, LPCSTR PSFilename )
+{
+	// Load Shaders
+    std::vector<byte> vsData = LoadShaderFile( VSFilename, VERTEX_SHADER );
+    std::vector<byte> psData = LoadShaderFile( PSFilename, PIXEL_SHADER );
+
+	// Assign vertex and pixel shaders
+	HRESULT hr = graphicsDevice->GetDevice()->CreateVertexShader( vsData.data(), vsData.size(), nullptr, &vertexShader );
+	assert( SUCCEEDED( hr ) );
+
+	hr = graphicsDevice->GetDevice()->CreatePixelShader( psData.data(), psData.size(), NULL, &pixelShader );
+	assert( SUCCEEDED( hr ) );
+
+	// Assign input layout
+	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
+		  { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		  { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		  { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+	hr = graphicsDevice->GetDevice()->CreateInputLayout( inputElementDesc, ARRAYSIZE( inputElementDesc ), vsData.data(), vsData.size(), &inputLayout );
+	assert( SUCCEEDED( hr ) );
+
+	// ConstantBuffer
+	D3D11_BUFFER_DESC bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof( ConstantBuffer );
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	hr = graphicsDevice->GetDevice()->CreateBuffer( &bd, nullptr, &constantBuffer );
+	assert( SUCCEEDED( hr ) );
+}
+
+void ShaderProgram::ClearResources()
+{
+    if (vertexShader)
+    {
+        vertexShader->Release();
+        vertexShader = nullptr;
+    }
+
+    if (pixelShader)
+    {
+        pixelShader->Release();
+        pixelShader = nullptr;
+    }
+
+    if (inputLayout)
+    {
+        inputLayout->Release();
+        inputLayout = nullptr;
+    }
+
+    if (constantBuffer)
+    {
+        constantBuffer->Release();
+        constantBuffer = nullptr;
+    }
+}
+
+
+void ShaderProgram::UpdateBuffers( ConstantBuffer cb )
+{
+	graphicsDevice->GetDeviceContext()->UpdateSubresource( constantBuffer, 0, NULL, &cb, 0, 0 );
+	graphicsDevice->GetDeviceContext()->VSSetConstantBuffers( 0, 1, &constantBuffer );
+	graphicsDevice->GetDeviceContext()->PSSetConstantBuffers( 0, 1, &constantBuffer );
+}
+
+void ShaderProgram::Bind()
+{
+	graphicsDevice->GetDeviceContext()->VSSetShader( vertexShader, NULL, 0 );
+	graphicsDevice->GetDeviceContext()->PSSetShader( pixelShader, NULL, 0 );
+	graphicsDevice->GetDeviceContext()->IASetInputLayout( inputLayout ); 
+}
+
+bool ShaderProgram::CompileHLSL( const std::string& filenameWithoutExtension, ShaderType shaderType )
+{
+    LPCSTR entryPoint;
+    LPCSTR shaderModel;
+
+    switch (shaderType)
+    {
+    case VERTEX_SHADER:
+        entryPoint = "VSmain";
+        shaderModel = "vs_5_0";
+        break;
+    case PIXEL_SHADER:
+        entryPoint = "PSmain";
+        shaderModel = "ps_5_0";
+        break;
+    default:
+        return false;
+    }
+
+    // Construct the full path of the HLSL file.
+    std::string fullHLSLPath = "assets/shaders/" + filenameWithoutExtension + ".hlsl";
+    std::ifstream hlslFile( fullHLSLPath, std::ios::binary | std::ios::ate );
+
+    if (!hlslFile.is_open())
+    {
+        return false;
+    }
+
+    const size_t fileSize = static_cast<size_t>(hlslFile.tellg());
+    hlslFile.seekg( 0, std::ios::beg );
+
+    std::vector<char> hlslData( fileSize );
+    if (!hlslFile.read( hlslData.data(), fileSize ))
+    {
+        return false;
+    }
+
+    hlslFile.close();
+
+    ID3DBlob* shaderBlob = nullptr;
+    ID3DBlob* errorBlob = nullptr;
+
+    HRESULT hr = D3DCompile(
+        hlslData.data(),
+        hlslData.size(),
+        nullptr,
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        entryPoint,
+        shaderModel,
+        0,
+        0,
+        &shaderBlob,
+        &errorBlob
+    );
+
+    if (FAILED( hr ))
+    {
+        if (errorBlob)
+        {
+            char* errorMsg = static_cast<char*>(errorBlob->GetBufferPointer());
+            // Handle the error, possibly log the error message.
+            errorBlob->Release();
+        }
+        return false;
+    }
+
+    // Construct the path for the output .cso file.
+    std::string outputPath = "assets/shaders/shadercache/" + filenameWithoutExtension + ".cso";
+
+    std::ofstream csoFile( outputPath, std::ios::binary );
+    csoFile.write( static_cast<char*>(shaderBlob->GetBufferPointer()), shaderBlob->GetBufferSize() );
+    csoFile.close();
+
+    shaderBlob->Release();
+
+    return true;
+}
+
+std::vector<byte> ShaderProgram::LoadShaderFile( const std::string& filenameWithoutExtension, ShaderType shaderType )
+{
+    // Construct the full path for the CSO file.
+    std::string csoPath = "assets/shaders/shadercache/" + filenameWithoutExtension + ".cso";
+    std::ifstream file( csoPath, std::ios::binary | std::ios::ate );
+
+    // If the CSO file isn't found.
+    if (!file.is_open())
+    {
+        if (!CompileHLSL( filenameWithoutExtension, shaderType ))
+        {
+            switch (shaderType)
+            {
+            case PIXEL_SHADER:
+                file.open( "assets/shaders/shadercache/ErrorPS.cso", std::ios::binary | std::ios::ate );
+                break;
+            case VERTEX_SHADER:
+                file.open( "assets/shaders/shadercache/ErrorVS.cso", std::ios::binary | std::ios::ate );
+                break;
+            }
+            
+            if (!file.is_open())
+            {
+                throw std::runtime_error( "Failed to open fallback CSO file" );
+            }
+        }
+        else
+        {
+            // If the HLSL compilation was successful, you might have a new .cso file.
+            // Try to open it again.
+            file.open( csoPath, std::ios::binary | std::ios::ate );
+            if (!file.is_open())
+            {
+                throw std::runtime_error( "Failed to open CSO file after compilation: " + csoPath );
+            }
+        }
+    }
+
+    const size_t fileSize = static_cast<size_t>(file.tellg());
+    file.seekg( 0, std::ios::beg );
+
+    std::vector<byte> fileData( fileSize );
+    if (!file.read( reinterpret_cast<char*>(fileData.data()), fileSize ))
+    {
+        throw std::runtime_error( "Failed to read CSO file: " + filenameWithoutExtension );
+    }
+
+    file.close();
+    return fileData;
+}
+
+
+
+ShaderProgram.h:
+
+#pragma once
+
+#include "GameEngine.h"
+
+struct ConstantBuffer
+{
+	XMMATRIX transformation;
+    XMMATRIX world;
+    XMMATRIX view;
+    XMMATRIX projection;
+    XMFLOAT4 ColorA;
+    XMFLOAT4 ColorB;
+	double Time;
+	float padding[2];
+};
+
+enum ShaderType
+{
+	VERTEX_SHADER,
+	PIXEL_SHADER
+};
+
+class ShaderProgram
+{
+public:
+	ShaderProgram(GraphicsDevice* graphicsDevice) : graphicsDevice(graphicsDevice) {}
+	void LoadShader(LPCSTR VSFilename, LPCSTR PSFilename);
+	void ClearResources();
+	void UpdateBuffers(ConstantBuffer cb);
+	void Bind();
+
+private:
+	bool CompileHLSL( const std::string& filename, ShaderType shaderType );
+	std::vector<byte> LoadShaderFile( const std::string& filename, ShaderType shaderType );
+	ID3D11VertexShader* vertexShader = nullptr;
+	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11InputLayout* inputLayout = nullptr;
+	GraphicsDevice* graphicsDevice = nullptr;
+	ID3D11Buffer* constantBuffer = nullptr;
+};
+
+Win32Application.cpp:
+
+#include "pch.h"
+#include "Win32Application.h"
+
+HWND Win32Application::hWnd = nullptr;
+
+void Win32Application::Initialize( HINSTANCE hInstance, int nCmdShow, int windowWidth, int windowHeight )
+{
+	WNDCLASSEXW wcex{};
+	wcex.cbSize = sizeof( WNDCLASSEX );
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WindowProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon( hInstance, MAKEINTRESOURCE( IDI_GAMEOFLIFEDIRECT3D ) );
+	wcex.hCursor = LoadCursor( nullptr, IDC_ARROW );
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszClassName = L"GAMEOFLIFEDIRECT3D";
+	RegisterClassExW( &wcex );
+
+	RECT windowRect = { 0, 0, static_cast<LONG>(windowWidth), static_cast<LONG>(windowHeight) };
+	AdjustWindowRect( &windowRect, WS_OVERLAPPEDWINDOW, FALSE );
+
+	// Calculate centered window position
+	int screenWidth = GetSystemMetrics( SM_CXSCREEN );
+	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
+	int windowPosX = (screenWidth - (windowRect.right - windowRect.left)) / 2;
+	int windowPosY = (screenHeight - (windowRect.bottom - windowRect.top)) / 2;
+
+	hWnd = CreateWindowW( L"GAMEOFLIFEDIRECT3D", L"GameOfLifeDirect3D", WS_OVERLAPPEDWINDOW,
+		windowPosX, windowPosY, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr );
+
+	// Set the window to be topmost to overlap the taskbar
+	SetWindowPos( hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE );
+
+	ShowWindow( hWnd, nCmdShow );
+	UpdateWindow( hWnd );
+}
+
+
+int Win32Application::Run( DirectXManager* dXManager )
+{
+
+	SetWindowLongPtr( hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dXManager) );
+
+	// Main message/game loop:
+	MSG msg;
+	while (true)
+	{
+		if (PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ))
+		{
+			TranslateMessage( &msg );
+			DispatchMessage( &msg );
+			if (msg.message == WM_QUIT) break;
+		}
+		else
+		{
+			dXManager->Update();
+		}
+	}
+	return (int)msg.wParam;
+}
+
+LRESULT Win32Application::WindowProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+{
+	DirectXManager* dXManager = reinterpret_cast<DirectXManager*>(GetWindowLongPtr( hWnd, GWLP_USERDATA ));
+
+	switch (message)
+	{
+	case WM_LBUTTONDOWN:
+	{
+		if (dXManager)
+		{
+			dXManager->handleLeftDown( wParam, lParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_LBUTTONUP:
+	{
+		if (dXManager)
+		{
+			dXManager->handleLeftUp( lParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_KEYDOWN:
+	{
+		if (dXManager)
+		{
+			dXManager->handleKeyDown( wParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_KEYUP:
+	{
+		if (dXManager)
+		{
+			dXManager->handleKeyUp( wParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_MOUSEMOVE:
+	{
+
+		if (dXManager)
+		{
+			dXManager->handleMouseMove( wParam, lParam );
+		}
+
+		return 0;
+		break;
+	}
+	case WM_MOUSEWHEEL:
+	{
+		if (dXManager)
+		{
+			dXManager->handleMouseWheel( wParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_ACTIVATE:
+	{
+		if (dXManager)
+		{
+			dXManager->handleLostFocus( wParam );
+		}
+
+		return 0;
+		break;
+	}
+	case WM_SETFOCUS:
+		if (dXManager)
+		{
+			dXManager->handleSetFocus();
+		}
+		return 0;
+		break;
+	case WM_SIZE:
+	{
+		if (dXManager)
+		{
+			dXManager->handleSize( lParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_DESTROY:
+		PostQuitMessage( 0 );
+		return 0;
+	default:
+		return DefWindowProc( hWnd, message, wParam, lParam );
+	}
+}
+
+
+Win32Application.h:
+
+#pragma once
+
+#include "GameEngine.h"
+#include "DirectXManager.h"
+
+class Win32Application
+{
+public:
+	static void Initialize(HINSTANCE hInstance, int nCmdShow, int windowWidth, int windowHeight);
+	static int Run(DirectXManager* pSample);
+	static HWND GetHwnd() { return hWnd; }
+protected:
+	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+private:
+	static HWND hWnd;
+};
+
+

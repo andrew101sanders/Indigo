@@ -83,7 +83,7 @@ void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
 	model->AddMeshEntry( new Mesh( mainDevice, "planeWrinkly.glb" ), materialOpaqueWavey );
 	model->SetPosition( XMFLOAT3( 0.0f, -1.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 100.0f, 1.0f, 100.0f ) );
-	//AddModel( model );
+	AddModel( model );
 
 	model = new Model( mainDevice );
 	model->AddMeshEntry( new Mesh( mainDevice, "plane.glb" ), new Material( mainDevice, testshaderProgramOpaque, renderStateOpaque , false));
@@ -103,7 +103,7 @@ void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
 	model->AddMeshEntry( new Mesh( mainDevice, "cubePretty.glb" ), materialOpaqueTextured );
 	model->SetPosition( XMFLOAT3( 0.0f, 0.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 100.0f, 100.0f, 100.0f ) );
-	//AddModel( model );
+	AddModel( model );
 
 	model = new Model( mainDevice );
 	model->AddMeshEntry( new Mesh( mainDevice, "gun.glb" ), materialOpaqueTextured2 );

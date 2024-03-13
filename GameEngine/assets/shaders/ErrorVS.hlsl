@@ -12,7 +12,7 @@ VSOut VSmain(VSIn i)
     transformedPosition = mul(transformedPosition, projectionMatrix);
     output.positionClip = transformedPosition;
 
-    output.uv = i.uv * 2 - 1;
+    output.uv = i.uv;
 
     output.normals = i.normals; 
 

@@ -22,6 +22,7 @@ void GraphicsDevice::Initialize(HWND hWnd, int width, int height)
     // Create device, deviceContext, and swap chain
     D3D_FEATURE_LEVEL feature_level;
     UINT flags = D3D11_CREATE_DEVICE_DEBUG;
+
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
         NULL,
         D3D_DRIVER_TYPE_HARDWARE,
@@ -36,6 +37,18 @@ void GraphicsDevice::Initialize(HWND hWnd, int width, int height)
         &feature_level,
         &deviceContext);
     assert(S_OK == hr && swapChain && device && deviceContext);
+
+    hr = D3D11CreateDevice(
+        NULL,
+        D3D_DRIVER_TYPE_HARDWARE,
+        NULL,
+        0,
+        NULL,
+        0,
+        D3D11_SDK_VERSION,
+        &device,
+        &feature_level,
+        &deviceContext );
 
     // Setup render target
     ID3D11Texture2D* framebuffer{};
