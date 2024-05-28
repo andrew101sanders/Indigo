@@ -38,18 +38,6 @@ void GraphicsDevice::Initialize(HWND hWnd, int width, int height)
         &deviceContext);
     assert(S_OK == hr && swapChain && device && deviceContext);
 
-    hr = D3D11CreateDevice(
-        NULL,
-        D3D_DRIVER_TYPE_HARDWARE,
-        NULL,
-        0,
-        NULL,
-        0,
-        D3D11_SDK_VERSION,
-        &device,
-        &feature_level,
-        &deviceContext );
-
     // Setup render target
     ID3D11Texture2D* framebuffer{};
     hr = swapChain->GetBuffer(

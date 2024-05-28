@@ -8,6 +8,6 @@
 #define PCH_H
 
 // add headers that you want to pre-compile here
-#include "GameEngine.h"
+#include "Indigo.h"
 
 #endif //PCH_H

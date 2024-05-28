@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34202.233
+VisualStudioVersion = 17.11.34909.67
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameEngine", "GameEngine\GameEngine.vcxproj", "{3F7CB7D3-E9D9-48B2-A2CE-B63490641751}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Indigo", "Indigo\Indigo.vcxproj", "{9CBF0F4E-6B9A-4051-B33C-57E9B79F138D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3F7CB7D3-E9D9-48B2-A2CE-B63490641751}.Debug|x64.ActiveCfg = Debug|x64
-		{3F7CB7D3-E9D9-48B2-A2CE-B63490641751}.Debug|x64.Build.0 = Debug|x64
-		{3F7CB7D3-E9D9-48B2-A2CE-B63490641751}.Release|x64.ActiveCfg = Release|x64
-		{3F7CB7D3-E9D9-48B2-A2CE-B63490641751}.Release|x64.Build.0 = Release|x64
+		{9CBF0F4E-6B9A-4051-B33C-57E9B79F138D}.Debug|x64.ActiveCfg = Debug|x64
+		{9CBF0F4E-6B9A-4051-B33C-57E9B79F138D}.Debug|x64.Build.0 = Debug|x64
+		{9CBF0F4E-6B9A-4051-B33C-57E9B79F138D}.Release|x64.ActiveCfg = Release|x64
+		{9CBF0F4E-6B9A-4051-B33C-57E9B79F138D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {F0730F40-61CD-446A-91D4-E8B3F65A1D21}
+		SolutionGuid = {E839D3BD-2621-4546-8B84-DCB8A54264AA}
 	EndGlobalSection
 EndGlobal

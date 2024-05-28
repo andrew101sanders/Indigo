@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 
 #include "Camera.h"
 #include "GraphicsDevice.h"

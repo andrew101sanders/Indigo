@@ -1,7 +1,7 @@
-// GameEngine.cpp : Defines the entry point for the application.
+// Indigo.cpp : Defines the entry point for the application.
 //
 #include "pch.h"
-#include "GameEngine.h"
+#include "Indigo.h"
 
 #define CGLTF_IMPLEMENTATION
 #define CGLTF_WRITE_IMPLEMENTATION

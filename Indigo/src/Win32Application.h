@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 #include "DirectXManager.h"
 
 class Win32Application
