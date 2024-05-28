@@ -193,7 +193,7 @@ Camera.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 #include "GraphicsDevice.h"
 
 class Camera
@@ -708,7 +708,7 @@ DirectXManager.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 
 #include "Camera.h"
 #include "GraphicsDevice.h"
@@ -763,93 +763,6 @@ private:
 	bool keyD = false;
 };
 
-GameEngine.cpp:
-
-// GameEngine.cpp : Defines the entry point for the application.
-//
-#include "pch.h"
-#include "GameEngine.h"
-
-#define CGLTF_IMPLEMENTATION
-#define CGLTF_WRITE_IMPLEMENTATION
-#pragma warning(push)
-#pragma warning(disable: 4996)
-#include "cgltf_write.h"
-#include "cgltf.h"
-#pragma warning(pop)
-
-// Global Variables:
-const int windowWidth = 1600;
-const int windowHeight = 900;
-
-
-int APIENTRY wWinMain( _In_ HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow )
-{
-	DirectXManager* dxManager = new DirectXManager();
-	Win32Application winapp;
-	winapp.Initialize( hInstance, nCmdShow, windowWidth, windowHeight );
-	dxManager->Initialize( winapp.GetHwnd(), windowWidth, windowHeight );
-	winapp.Run( dxManager );
-}
-
-GameEngine.h:
-
-#pragma once
-
-#include <SDKDDKVer.h>
-
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files
-#include <windows.h>
-// C RunTime Header Files
-#include <stdlib.h>
-#include <malloc.h>
-#include <memory.h>
-#include <tchar.h>
-
-#include "resource.h"
-#include <chrono>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-#include <sstream>
-#include <unordered_map>
-#include <wincodec.h>
-
-#include "lodepng.h"
-
-#include <d3d11.h>
-#include <DirectXMath.h>
-#include <D3Dcompiler.h>
-#pragma comment (lib, "d3d11.lib")
-#pragma comment (lib, "D3Dcompiler.lib")
-
-// Direct2D Stuff
-#include <d2d1_2.h>
-#include <d2d1_1.h>
-#include <d2d1.h>
-#include <dwrite.h>
-
-#pragma comment (lib, "d2d1.lib")
-#pragma comment(lib, "dwrite.lib")
-
-using namespace DirectX;
-
-#include "Win32Application.h"
-#include "DirectXManager.h"
-#include "Camera.h"
-#include "GraphicsDevice.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "Model.h"
-#include "RenderState.h"
-#include "ShaderProgram.h"
-
-
 GraphicsDevice.cpp:
 
 #include "pch.h"
@@ -876,6 +789,7 @@ void GraphicsDevice::Initialize(HWND hWnd, int width, int height)
     // Create device, deviceContext, and swap chain
     D3D_FEATURE_LEVEL feature_level;
     UINT flags = D3D11_CREATE_DEVICE_DEBUG;
+
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
         NULL,
         D3D_DRIVER_TYPE_HARDWARE,
@@ -1003,7 +917,7 @@ GraphicsDevice.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 
 class GraphicsDevice
 {
@@ -1033,6 +947,93 @@ private:
 	HWND hWnd;
 
 };
+
+Indigo.cpp:
+
+// Indigo.cpp : Defines the entry point for the application.
+//
+#include "pch.h"
+#include "Indigo.h"
+
+#define CGLTF_IMPLEMENTATION
+#define CGLTF_WRITE_IMPLEMENTATION
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#include "cgltf_write.h"
+#include "cgltf.h"
+#pragma warning(pop)
+
+// Global Variables:
+const int windowWidth = 1600;
+const int windowHeight = 900;
+
+
+int APIENTRY wWinMain( _In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow )
+{
+	DirectXManager* dxManager = new DirectXManager();
+	Win32Application winapp;
+	winapp.Initialize( hInstance, nCmdShow, windowWidth, windowHeight );
+	dxManager->Initialize( winapp.GetHwnd(), windowWidth, windowHeight );
+	winapp.Run( dxManager );
+}
+
+Indigo.h:
+
+#pragma once
+
+#include <SDKDDKVer.h>
+
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+// Windows Header Files
+#include <windows.h>
+// C RunTime Header Files
+#include <stdlib.h>
+#include <malloc.h>
+#include <memory.h>
+#include <tchar.h>
+
+#include "resource.h"
+#include <chrono>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+#include <sstream>
+#include <unordered_map>
+#include <wincodec.h>
+
+#include "lodepng.h"
+
+#include <d3d11.h>
+#include <DirectXMath.h>
+#include <D3Dcompiler.h>
+#pragma comment (lib, "d3d11.lib")
+#pragma comment (lib, "D3Dcompiler.lib")
+
+// Direct2D Stuff
+#include <d2d1_2.h>
+#include <d2d1_1.h>
+#include <d2d1.h>
+#include <dwrite.h>
+
+#pragma comment (lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
+
+using namespace DirectX;
+
+#include "Win32Application.h"
+#include "DirectXManager.h"
+#include "Camera.h"
+#include "GraphicsDevice.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "Model.h"
+#include "RenderState.h"
+#include "ShaderProgram.h"
+
 
 Material.cpp:
 
@@ -1156,7 +1157,7 @@ Material.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 #include "ShaderProgram.h"
 #include "RenderState.h"
 
@@ -1341,7 +1342,7 @@ Mesh.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 #include "GraphicsDevice.h"
 
 class Model;
@@ -1427,7 +1428,7 @@ Model.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 #include "GraphicsDevice.h"
 #include "Material.h"
 
@@ -1488,7 +1489,7 @@ pch.h:
 #define PCH_H
 
 // add headers that you want to pre-compile here
-#include "GameEngine.h"
+#include "Indigo.h"
 
 #endif //PCH_H
 
@@ -1560,7 +1561,7 @@ RenderState.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 
 class RenderState
 {
@@ -1600,7 +1601,7 @@ Scene.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 
 class Scene {
 public:
@@ -1753,7 +1754,7 @@ ShaderManager.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 
 class ShaderManager
 {
@@ -2004,7 +2005,7 @@ ShaderProgram.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 
 struct ConstantBuffer
 {
@@ -2059,10 +2060,10 @@ void Win32Application::Initialize( HINSTANCE hInstance, int nCmdShow, int window
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon( hInstance, MAKEINTRESOURCE( IDI_GAMEOFLIFEDIRECT3D ) );
+	wcex.hIcon = LoadIcon( hInstance, MAKEINTRESOURCE( IDI_Indigo ) );
 	wcex.hCursor = LoadCursor( nullptr, IDC_ARROW );
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszClassName = L"GAMEOFLIFEDIRECT3D";
+	wcex.lpszClassName = L"Indigo";
 	RegisterClassExW( &wcex );
 
 	RECT windowRect = { 0, 0, static_cast<LONG>(windowWidth), static_cast<LONG>(windowHeight) };
@@ -2074,7 +2075,7 @@ void Win32Application::Initialize( HINSTANCE hInstance, int nCmdShow, int window
 	int windowPosX = (screenWidth - (windowRect.right - windowRect.left)) / 2;
 	int windowPosY = (screenHeight - (windowRect.bottom - windowRect.top)) / 2;
 
-	hWnd = CreateWindowW( L"GAMEOFLIFEDIRECT3D", L"GameOfLifeDirect3D", WS_OVERLAPPEDWINDOW,
+	hWnd = CreateWindowW( L"Indigo", L"Indigo", WS_OVERLAPPEDWINDOW,
 		windowPosX, windowPosY, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr );
 
 	// Set the window to be topmost to overlap the taskbar
@@ -2209,7 +2210,7 @@ Win32Application.h:
 
 #pragma once
 
-#include "GameEngine.h"
+#include "Indigo.h"
 #include "DirectXManager.h"
 
 class Win32Application
