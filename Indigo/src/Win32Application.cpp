@@ -12,10 +12,10 @@ void Win32Application::Initialize( HINSTANCE hInstance, int nCmdShow, int window
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon( hInstance, MAKEINTRESOURCE( IDI_GAMEOFLIFEDIRECT3D ) );
+	wcex.hIcon = LoadIcon( hInstance, MAKEINTRESOURCE( IDI_Indigo ) );
 	wcex.hCursor = LoadCursor( nullptr, IDC_ARROW );
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszClassName = L"GAMEOFLIFEDIRECT3D";
+	wcex.lpszClassName = L"Indigo";
 	RegisterClassExW( &wcex );
 
 	RECT windowRect = { 0, 0, static_cast<LONG>(windowWidth), static_cast<LONG>(windowHeight) };
@@ -27,7 +27,7 @@ void Win32Application::Initialize( HINSTANCE hInstance, int nCmdShow, int window
 	int windowPosX = (screenWidth - (windowRect.right - windowRect.left)) / 2;
 	int windowPosY = (screenHeight - (windowRect.bottom - windowRect.top)) / 2;
 
-	hWnd = CreateWindowW( L"GAMEOFLIFEDIRECT3D", L"GameOfLifeDirect3D", WS_OVERLAPPEDWINDOW,
+	hWnd = CreateWindowW( L"Indigo", L"Indigo", WS_OVERLAPPEDWINDOW,
 		windowPosX, windowPosY, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr );
 
 	// Set the window to be topmost to overlap the taskbar

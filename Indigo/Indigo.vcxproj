@@ -50,10 +50,10 @@
     <ClInclude Include="src\Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="res\GameEngine.rc" />
+    <ResourceCompile Include="res\Indigo.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\GameEngine.ico" />
+    <Image Include="res\Indigo.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\meshes\cube.glb" />

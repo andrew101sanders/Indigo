@@ -2,8 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by GameOfLifeDirect3D.rc
 //
-#define IDI_GAMEOFLIFEDIRECT3D          107
-#define IDI_GAMEEngine                  107
+#define IDI_Indigo                      107
 #define IDR_MAINFRAME                   128
 #define IDC_STATIC                      -1
 
