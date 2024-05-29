@@ -13,7 +13,6 @@ cbuffer ConstantBuffer : register( b0 )
     float4 ColorB;
     double Time;
     float padding[ 2 ];
-
 };
 
 struct VSIn

@@ -13,11 +13,6 @@ void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
 	
 	// Load Shaders
 	shaderManager = new ShaderManager(mainDevice, "assets/shaders/");
-	std::shared_ptr<ShaderProgram> shaderProgramOpaque =			shaderManager->LoadShader( "BasicVS", "BasicPS" );
-	std::shared_ptr<ShaderProgram> testshaderProgramOpaque =		shaderManager->LoadShader( "BasicVS", "testPS" );
-	std::shared_ptr<ShaderProgram> shaderProgramOpaqueTextured =	shaderManager->LoadShader( "BasicTextureVS", "BasicTexturePS" );
-	std::shared_ptr<ShaderProgram> shaderProgramTransparent =		shaderManager->LoadShader( "BasicVS", "TransparentPS" );
-	std::shared_ptr<ShaderProgram> shaderProgramOpaqueWavey =		shaderManager->LoadShader( "WaveyVS", "BasicPS" );
 
 	// Load RenderStates
 	RenderState* renderStateOpaque = new RenderState( mainDevice );
@@ -67,32 +62,24 @@ void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
 	dsDesc2.DepthFunc = D3D11_COMPARISON_LESS;             // Typical depth test
 	renderStateTransparent->CreateDepthStencilState( dsDesc2 );
 
-	Material* materialOpaque, * materialTransparent, * materialOpaqueWavey, * materialOpaqueTextured, * materialOpaqueTextured2;
-	materialOpaque = new Material( mainDevice, shaderProgramOpaque, renderStateOpaque, false);
-	materialOpaqueWavey = new Material( mainDevice, shaderProgramOpaqueWavey, renderStateOpaque, false );
-	materialTransparent = new Material( mainDevice, shaderProgramTransparent, renderStateTransparent, true );
-	materialOpaqueTextured = new Material( mainDevice, shaderProgramOpaqueTextured, renderStateOpaque, false );
-	materialOpaqueTextured->LoadTexture( "cubePretty.glb" );
-	materialOpaqueTextured2 = new Material( mainDevice, shaderProgramOpaqueTextured, renderStateOpaque, false );
-	materialOpaqueTextured2->LoadTexture( "gun.glb" );
 
-
-	Model* model;
-
-	model = new Model( mainDevice );
+	Model* model = new Model( mainDevice );
+	Material* materialOpaqueWavey = new Material( mainDevice, shaderManager->LoadShader( "WaveyVS", "BasicPS" ), renderStateOpaque, false );
 	model->AddMeshEntry( new Mesh( mainDevice, "planeWrinkly.glb" ), materialOpaqueWavey );
 	model->SetPosition( XMFLOAT3( 0.0f, -1.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 100.0f, 1.0f, 100.0f ) );
 	AddModel( model );
 
 	model = new Model( mainDevice );
-	model->AddMeshEntry( new Mesh( mainDevice, "plane.glb" ), new Material( mainDevice, testshaderProgramOpaque, renderStateOpaque , false));
+	Material* materialOpaqueCyber = new Material( mainDevice, shaderManager->LoadShader( "BasicVS", "Cyber Fuji 2020PS" ), renderStateOpaque, false );
+	model->AddMeshEntry( new Mesh( mainDevice, "plane.glb" ), materialOpaqueCyber);
 	model->SetPosition( XMFLOAT3( 0.0f, 25.0f, 50.0f ) );
 	model->SetRotation( XMFLOAT3( -1.7f, 0.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 48.0f, 1.0f, 27.0f ) );
 	AddModel( model );
 
 	model = new Model( mainDevice );
+	Material* materialOpaque = new Material( mainDevice, shaderManager->LoadShader( "BasicVS", "BasicPS" ), renderStateOpaque, false );
 	model->AddMeshEntry( new Mesh( mainDevice, "cube.glb" ), materialOpaque );
 	model->SetPosition( XMFLOAT3( 3.0f, 0.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 1.0f, 1.0f, 0.2f ) );
@@ -100,18 +87,15 @@ void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
 	AddModel( model );
 
 	model = new Model( mainDevice );
+	Material* materialOpaqueTextured = new Material( mainDevice, shaderManager->LoadShader( "BasicTextureVS", "BasicTexturePS" ), renderStateOpaque, false );
+	materialOpaqueTextured->LoadTexture( "cubePretty.glb" );
 	model->AddMeshEntry( new Mesh( mainDevice, "cubePretty.glb" ), materialOpaqueTextured );
 	model->SetPosition( XMFLOAT3( 0.0f, 0.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 100.0f, 100.0f, 100.0f ) );
 	AddModel( model );
 
 	model = new Model( mainDevice );
-	model->AddMeshEntry( new Mesh( mainDevice, "gun.glb" ), materialOpaqueTextured2 );
-	model->SetPosition( XMFLOAT3( 0.0f, 0.5f, 0.0f ) );
-	model->SetScale( XMFLOAT3( 1.0f, 1.0f, 1.0f ) );
-	//AddModel( model );
-
-	model = new Model( mainDevice );
+	Material* materialTransparent = new Material( mainDevice, shaderManager->LoadShader( "BasicVS", "TransparentPS" ), renderStateTransparent, true );
 	model->AddMeshEntry( new Mesh( mainDevice, "cylinderPretty.glb" ), materialTransparent );
 	AddModel( model );
 	mainControllableModel = model;
@@ -300,6 +284,12 @@ void DirectXManager::handleLeftDown( WPARAM wParam, LPARAM lParam )
 		ClientToScreen( mainDevice->GetHWND(), &center );
 		SetCursorPos( center.x, center.y );
 
+		// Constrain the cursor within the window bounds
+		RECT rect;
+		GetClientRect( mainDevice->GetHWND(), &rect );
+		MapWindowPoints( mainDevice->GetHWND(), nullptr, (POINT*)&rect, 2 );
+		ClipCursor( &rect );
+
 		lastMousePos.x = center.x;
 		lastMousePos.y = center.y;
 
@@ -312,6 +302,7 @@ void DirectXManager::handleLeftUp( LPARAM lParam )
 {
 
 }
+
 
 void DirectXManager::handleKeyDown( WPARAM wParam )
 {
@@ -340,6 +331,7 @@ void DirectXManager::handleKeyDown( WPARAM wParam )
 	{
 		ReleaseCapture();
 		ShowCursor( TRUE );  // Show the cursor when window loses focus
+		ClipCursor( nullptr );  // Release the cursor from being confined
 		isMouseCaptured = false;
 		break;
 	}
@@ -392,7 +384,7 @@ void DirectXManager::handleMouseMove( WPARAM wParam, LPARAM lParam )
 	}	
 }
 
-void DirectXManager::handleLostFocus(WPARAM wParam)
+void DirectXManager::handleLostFocus( WPARAM wParam )
 {
 	if (LOWORD( wParam ) == WA_INACTIVE) // If the window is deactivated
 	{
@@ -400,11 +392,12 @@ void DirectXManager::handleLostFocus(WPARAM wParam)
 		{
 			ReleaseCapture();
 			ShowCursor( TRUE );  // Show the cursor when window loses focus
+			ClipCursor( nullptr );  // Release the cursor from being confined
 			isMouseCaptured = false;
 		}
 	}
-
 }
+
 
 void DirectXManager::handleSetFocus()
 {
@@ -413,6 +406,7 @@ void DirectXManager::handleSetFocus()
 	timeSinceLastShaderCheck = 0.0;
 #endif
 }
+
 
 void DirectXManager::handleMouseWheel( WPARAM wParam )
 {

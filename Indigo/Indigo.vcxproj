@@ -61,7 +61,6 @@
     <None Include="assets\meshes\cubePretty.glb" />
     <None Include="assets\meshes\cylinder.glb" />
     <None Include="assets\meshes\cylinderPretty.glb" />
-    <None Include="assets\meshes\gun.glb" />
     <None Include="assets\meshes\plane.glb" />
     <None Include="assets\meshes\planeWrinkly.glb" />
     <None Include="assets\meshes\sphere.glb" />
@@ -102,6 +101,10 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <FileType>Document</FileType>
     </None>
+    <None Include="assets\shaders\another synthwave sunset thing.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <FileType>Document</FileType>
+    </None>
     <FxCompile Include="assets\shaders\ErrorPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -124,7 +127,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)%(RelativeDir)shadercache\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)%(RelativeDir)shadercache\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
-    <None Include="assets\shaders\testPS.hlsl">
+    <None Include="assets\shaders\Cyber Fuji 2020PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSmain</EntryPointName>
