@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Indigo.h"
+class GraphicsDevice;
 
 class RenderState
 {

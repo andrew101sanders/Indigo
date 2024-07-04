@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Indigo.h"
-#include "ShaderProgram.h"
-#include "RenderState.h"
+class ShaderProgram;
+class RenderState;
+class GraphicsDevice;
+struct ConstantBuffer;
 
 class Material
 {

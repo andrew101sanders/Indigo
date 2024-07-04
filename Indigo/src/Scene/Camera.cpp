@@ -1,5 +1,8 @@
 #include "pch.h"
-#include "Camera.h"
+
+#include "Graphics/GraphicsDevice.h"
+
+#include "Scene/Camera.h"
 
 void Camera::Initialize( int windowWidth, int windowHeight)
 {
@@ -8,7 +11,6 @@ void Camera::Initialize( int windowWidth, int windowHeight)
 
 	// Initialize and set View, Projection, and World Matrices
 	calculateV();
-
 	calculateP();
 	worldMatrix = XMMatrixIdentity();
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Indigo.h"
+class Model;
 
 class Scene {
 public:

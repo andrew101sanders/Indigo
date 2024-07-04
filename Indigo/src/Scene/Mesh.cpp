@@ -1,7 +1,9 @@
 #include "pch.h"
-#include "Model.h"
-#include "Mesh.h"
-#include "cgltf.h"
+
+#include "Graphics/GraphicsDevice.h"
+
+#include "Scene/Model.h"
+#include "Scene/Mesh.h"
 
 Mesh::Mesh(GraphicsDevice* graphicsDevice, LPCSTR filename)
 {

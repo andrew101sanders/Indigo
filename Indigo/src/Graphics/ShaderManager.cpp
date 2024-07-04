@@ -1,5 +1,8 @@
 #include "pch.h"
-#include "ShaderManager.h"
+
+#include "Graphics/ShaderManager.h"
+#include "Graphics/ShaderProgram.h"
+#include "Graphics/GraphicsDevice.h"
 
 
 namespace fs = std::filesystem;

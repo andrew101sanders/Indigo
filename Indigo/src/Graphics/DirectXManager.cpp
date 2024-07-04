@@ -1,5 +1,15 @@
 #include "pch.h"
-#include "DirectXManager.h"
+
+#include "Graphics/DirectXManager.h"
+#include "Graphics/GraphicsDevice.h"
+#include "Graphics/ShaderManager.h"
+#include "Graphics/ShaderProgram.h"
+#include "Graphics/RenderState.h"
+#include "Graphics/Material.h"
+
+#include "Scene/Model.h"
+#include "Scene/Mesh.h"
+#include "Scene/Camera.h"
 
 
 void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )

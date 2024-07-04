@@ -1,6 +1,9 @@
 #include "pch.h"
-#include "Material.h"
-#include "cgltf.h"
+
+#include "Graphics/GraphicsDevice.h"
+#include "Graphics/Material.h"
+#include "Graphics/ShaderProgram.h"
+#include "Graphics/RenderState.h"
 
 void Material::LoadTexture( LPCSTR filenameIn ) {
     std::string baseDir = "assets/meshes/";

@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Indigo.h"
-#include "GraphicsDevice.h"
-#include "Material.h"
-
 class Mesh;
+class Material;
+class GraphicsDevice;
 
 class Model {
 public:

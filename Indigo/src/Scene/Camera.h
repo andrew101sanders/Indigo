@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Indigo.h"
-#include "GraphicsDevice.h"
+class GraphicsDevice;
 
 class Camera
 {

@@ -1,16 +1,12 @@
 #pragma once
 
-#include "Indigo.h"
-
-#include "Camera.h"
-#include "GraphicsDevice.h"
-#include "Mesh.h"
-#include "RenderState.h"
-#include "ShaderProgram.h"
-#include "ShaderManager.h"
-#include "Material.h"
-#include "Model.h"
-
+class Model;
+class Mesh;
+class Material;
+class GraphicsDevice;
+class ShaderProgram;
+class ShaderManager;
+class Camera;
 
 class DirectXManager
 {

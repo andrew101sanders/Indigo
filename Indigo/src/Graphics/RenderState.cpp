@@ -1,5 +1,7 @@
 #include "pch.h"
-#include "RenderState.h"
+
+#include "Graphics/GraphicsDevice.h"
+#include "Graphics/RenderState.h"
 
 RenderState::~RenderState()
 {

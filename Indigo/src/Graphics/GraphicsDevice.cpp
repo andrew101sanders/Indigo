@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "GraphicsDevice.h"
+#include "Graphics/GraphicsDevice.h"
 
 void GraphicsDevice::Initialize(HWND hWnd, int width, int height)
 {

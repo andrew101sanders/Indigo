@@ -1,5 +1,9 @@
 #include "pch.h"
-#include "Win32Application.h"
+#include "resource.h"
+
+#include "Core/Win32Application.h"
+#include "Graphics/DirectXManager.h"
+
 
 HWND Win32Application::hWnd = nullptr;
 

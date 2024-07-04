@@ -1,0 +1,165 @@
+.
+├── BuildLog
+│   ├── Debug
+│   │   ├── Camera.obj
+│   │   ├── DirectXManager.obj
+│   │   ├── GraphicsDevice.obj
+│   │   ├── Indigo.Build.CppClean.log
+│   │   ├── Indigo.exe.recipe
+│   │   ├── Indigo.log
+│   │   ├── Indigo.obj
+│   │   ├── Indigo.pch
+│   │   ├── Indigo.res
+│   │   ├── Indigo.tlog
+│   │   │   ├── CL.command.1.tlog
+│   │   │   ├── CL.read.1.tlog
+│   │   │   ├── CL.write.1.tlog
+│   │   │   ├── Indigo.lastbuildstate
+│   │   │   ├── fxc.command.1.tlog
+│   │   │   ├── fxc.read.1.tlog
+│   │   │   ├── link-cvtres.read.1.tlog
+│   │   │   ├── link-cvtres.write.1.tlog
+│   │   │   ├── link-rc.read.1.tlog
+│   │   │   ├── link-rc.write.1.tlog
+│   │   │   ├── link.command.1.tlog
+│   │   │   ├── link.read.1.tlog
+│   │   │   ├── link.read.2.tlog
+│   │   │   ├── link.read.3.tlog
+│   │   │   ├── link.read.4.tlog
+│   │   │   ├── link.write.1.tlog
+│   │   │   ├── rc.command.1.tlog
+│   │   │   ├── rc.read.1.tlog
+│   │   │   ├── rc.write.1.tlog
+│   │   │   └── unsuccessfulbuild
+│   │   ├── Indigo.vcxproj.FileListAbsolute.txt
+│   │   ├── Material.obj
+│   │   ├── Mesh.obj
+│   │   ├── Model.obj
+│   │   ├── RenderState.obj
+│   │   ├── Scene.obj
+│   │   ├── ShaderManager.obj
+│   │   ├── ShaderProgram.obj
+│   │   ├── Win32Application.obj
+│   │   ├── lodepng.obj
+│   │   ├── pch.obj
+│   │   ├── vc143.idb
+│   │   ├── vc143.pdb
+│   │   └── vcpkg.applocal.log
+│   └── Release
+│       ├── Camera.obj
+│       ├── DirectXManager.obj
+│       ├── GraphicsDevice.obj
+│       ├── Indigo.Build.CppClean.log
+│       ├── Indigo.exe.recipe
+│       ├── Indigo.iobj
+│       ├── Indigo.ipdb
+│       ├── Indigo.log
+│       ├── Indigo.obj
+│       ├── Indigo.pch
+│       ├── Indigo.res
+│       ├── Indigo.tlog
+│       │   ├── CL.command.1.tlog
+│       │   ├── CL.read.1.tlog
+│       │   ├── CL.write.1.tlog
+│       │   ├── Cl.items.tlog
+│       │   ├── Indigo.lastbuildstate
+│       │   ├── fxc.command.1.tlog
+│       │   ├── fxc.read.1.tlog
+│       │   ├── fxc.write.1.tlog
+│       │   ├── link.command.1.tlog
+│       │   ├── link.read.1.tlog
+│       │   ├── link.secondary.1.tlog
+│       │   ├── link.write.1.tlog
+│       │   ├── rc.command.1.tlog
+│       │   ├── rc.read.1.tlog
+│       │   └── rc.write.1.tlog
+│       ├── Indigo.vcxproj.FileListAbsolute.txt
+│       ├── Material.obj
+│       ├── Mesh.obj
+│       ├── Model.obj
+│       ├── RenderState.obj
+│       ├── Scene.obj
+│       ├── ShaderManager.obj
+│       ├── ShaderProgram.obj
+│       ├── Win32Application.obj
+│       ├── lodepng.obj
+│       ├── pch.obj
+│       ├── vc143.pdb
+│       └── vcpkg.applocal.log
+├── Indigo.vcxproj
+├── Indigo.vcxproj.filters
+├── Indigo.vcxproj.user
+├── assets
+│   ├── meshes
+│   │   ├── cube.glb
+│   │   ├── cubePretty.glb
+│   │   ├── cylinder.glb
+│   │   ├── cylinderPretty.glb
+│   │   ├── plane.glb
+│   │   ├── planeWrinkly.glb
+│   │   └── sphere.glb
+│   └── shaders
+│       ├── BasicPS.hlsl
+│       ├── BasicTexturePS.hlsl
+│       ├── BasicTextureVS.hlsl
+│       ├── BasicVS.hlsl
+│       ├── Cyber Fuji 2020PS.hlsl
+│       ├── ErrorPS.hlsl
+│       ├── ErrorVS.hlsl
+│       ├── ShaderCommon.hlsli
+│       ├── TransparentPS.hlsl
+│       ├── WaveyVS.hlsl
+│       └── another synthwave sunset thing.hlsl
+├── bin
+│   ├── GameEngine.dll
+│   ├── GameEngine.exe
+│   ├── GameEngine.pdb
+│   ├── Indigo.pdb
+│   └── assets
+│       └── shaders
+│           └── shadercache
+│               ├── ErrorPS.cso
+│               └── ErrorVS.cso
+├── include
+│   ├── cgltf.h
+│   ├── cgltf_write.h
+│   ├── lodepng.cpp
+│   └── lodepng.h
+├── res
+│   ├── Indigo.ico
+│   ├── Indigo.rc
+│   └── Resource.h
+├── src
+│   ├── Core
+│   │   ├── Indigo.cpp
+│   │   ├── Indigo.h
+│   │   ├── Win32Application.cpp
+│   │   └── Win32Application.h
+│   ├── Graphics
+│   │   ├── DirectXManager.cpp
+│   │   ├── DirectXManager.h
+│   │   ├── GraphicsDevice.cpp
+│   │   ├── GraphicsDevice.h
+│   │   ├── Material.cpp
+│   │   ├── Material.h
+│   │   ├── RenderState.cpp
+│   │   ├── RenderState.h
+│   │   ├── ShaderManager.cpp
+│   │   ├── ShaderManager.h
+│   │   ├── ShaderProgram.cpp
+│   │   └── ShaderProgram.h
+│   ├── Scene
+│   │   ├── Camera.cpp
+│   │   ├── Camera.h
+│   │   ├── Mesh.cpp
+│   │   ├── Mesh.h
+│   │   ├── Model.cpp
+│   │   ├── Model.h
+│   │   ├── Scene.cpp
+│   │   └── Scene.h
+│   ├── Utils
+│   ├── pch.cpp
+│   └── pch.h
+└── tree.txt
+
+19 directories, 143 files

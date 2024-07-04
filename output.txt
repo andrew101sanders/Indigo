@@ -1,272 +1,426 @@
-Camera.cpp:
+pch.cpp:
+
+// pch.cpp: source file corresponding to the pre-compiled header
 
 #include "pch.h"
-#include "Camera.h"
 
-void Camera::Initialize( int windowWidth, int windowHeight)
-{
-	SetViewport();
-	aspectRatio = (float)windowWidth / (float)windowHeight;
-
-	// Initialize and set View, Projection, and World Matrices
-	calculateV();
-
-	calculateP();
-	worldMatrix = XMMatrixIdentity();
-}
-
-void Camera::SetViewport()
-{
-	// Set Viewport
-	RECT winRect;
-	GetClientRect( graphicsDevice->GetHWND(), &winRect );
-	D3D11_VIEWPORT viewport = {
-		0.0f,
-		0.0f,
-		(FLOAT)(winRect.right - winRect.left),
-		(FLOAT)(winRect.bottom - winRect.top),
-		0.0f,
-		1.0f };
-	graphicsDevice->GetDeviceContext()->RSSetViewports( 1, &viewport );
-}
-
-void Camera::changeAspectRatio( float newAspectRatio )
-{
-	aspectRatio = newAspectRatio;
-	calculateP();
-}
-
-void Camera::AdjustFOV( float fovChangeFactor )
-{
-	// Convert FOV to radians
-	float fovInRadians = toRadians( fov );
-
-	// Adjust the FOV based on the zoom factor
-	fovInRadians += fovChangeFactor * toRadians( FOV_CHANGE_SPEED );
-
-	// Optional: Clamp the FOV to prevent it from becoming too narrow or too wide
-	fovInRadians = max( toRadians( 0.1f ), min( toRadians( 120.0f ), fovInRadians ) );
-
-	// Convert the clamped FOV back to degrees
-	fov = toDegrees( fovInRadians );
-
-	calculateP();
-}
-
-void Camera::Zoom( float zoomFactor )
-{
-	float speedMultiplier = 1.0f + std::fabs( cameraDistance ) * ZOOM_DISTANCE_FACTOR;
-	cameraDistance = std::clamp( cameraDistance + zoomFactor * ZOOM_CHANGE_SPEED * speedMultiplier, ZOOM_MIN, ZOOM_MAX );
-}
+// When you are using pre-compiled headers, this source file is necessary for compilation to succeed.
 
 
-void Camera::Rotate( int dx, int dy )
-{
+pch.h:
 
-	theta -= dx * ROTATION_SPEED;
-
-	// Wrap theta around [0, 2*pi]
-	theta = fmodf( theta, XM_2PI );
-	if (theta < 0.0f) {  // handle negative values
-		theta += XM_2PI;
-	}
-
-	phi += dy * ROTATION_SPEED;
-	phi = max( epsilon, min( XM_PI - epsilon, phi ) );
-}
-
-void Camera::MoveCamera( float dx, float dy, float dz )
-{
-	// Calculate the forward, right, and up vectors
-	float x = sinf( phi ) * cosf( theta );
-	float y = cosf( phi );
-	float z = sinf( phi ) * sinf( theta );
-
-	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
-	XMVECTOR right = XMVector3Cross( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), forward ); // Right vector using world up
-	XMVECTOR up = XMVector3Cross( forward, right ); // Up vector
-
-	// Scale the movement based on the desired dx, dy, and dz
-	position += forward * dz;
-	position += right * dx;
-	position += up * dy;
-
-	calculateV(); // Recalculate the view matrix with the updated position
-}
-
-void Camera::stopMovement()
-{
-	movementDirection = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-}
-
-void Camera::moveForward()
-{
-	float sinPhi = sinf( phi );
-	float x = sinPhi * cosf( theta );
-	float y = 0.0f; // cosf( phi );
-	float z = sinPhi * sinf( theta );
-	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
-	movementDirection += forward;
-}
-
-void Camera::moveLeft()
-{
-	float sinPhi = sinf( phi );
-	float x = sinPhi * cosf( theta );
-	float y = 0.0f; // cosf( phi );
-	float z = sinPhi * sinf( theta );
-	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
-	XMVECTOR right = XMVector3Cross( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), forward );
-	movementDirection -= right;
-}
-
-void Camera::moveBackward(  )
-{
-	float sinPhi = sinf( phi );
-	float x = sinPhi * cosf( theta );
-	float y = 0.0f; // cosf( phi );
-	float z = sinPhi * sinf( theta );
-	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
-	movementDirection -= forward;
-}
-
-void Camera::moveRight(  )
-{
-	float sinPhi = sinf( phi );
-	float x = sinPhi * cosf( theta );
-	float y = 0.0f; // cosf( phi );
-	float z = sinPhi * sinf( theta );
-	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
-	XMVECTOR right = XMVector3Cross( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), forward );
-	movementDirection += right;
-}
-
-void Camera::Update( double deltaTime )
-{
-	float fdeltaTime = static_cast<float>(deltaTime);
-	movementDirection = XMVector3Normalize( movementDirection );
-
-	// Compute the target velocity based on the desired direction of movement.
-	XMVECTOR targetVelocity = movementDirection * MOVE_SPEED;
-
-	// Accelerate towards the target velocity
-	XMVECTOR accelerationVector = (targetVelocity - velocity) * acceleration;
-	velocity += accelerationVector * fdeltaTime;
-
-	// Apply drag to the velocity
-	velocity *= powf( dragFactor, fdeltaTime );
-
-	// Update camera position based on velocity
-	position += velocity * fdeltaTime;
-
-	calculateV();  // Update view matrix with new position.
-}
-
-
-void Camera::calculateP()
-{
-	// Recalculate the projection matrix with the new FOV
-	projectionMatrix = XMMatrixPerspectiveFovLH( toRadians( fov ), aspectRatio, nearPlane, farPlane );
-}
-
-void Camera::calculateV()
-{
-	// Calculate direction based on angles
-	XMVECTOR direction = XMVectorSet(
-		sinf( phi ) * cosf( theta ),
-		cosf( phi ),
-		sinf( phi ) * sinf( theta ),
-		0.0f
-	);
-
-	// Determine Eye and At positions based on distance
-	XMVECTOR Eye = position - direction * cameraDistance;
-	XMVECTOR At = position + direction;  // Always look forward
-
-	// Compute the view matrix
-	viewMatrix = XMMatrixLookAtLH( Eye, At, WORLD_UP );
-}
-
-
-
-Camera.h:
+// pch.h: This is a precompiled header file.
+// Files listed below are compiled only once, improving build performance for future builds.
+// This also affects IntelliSense performance, including code completion and many code browsing features.
+// However, files listed here are ALL re-compiled if any one of them is updated between builds.
+// Do not add files here that you will be updating frequently as this negates the performance advantage.
 
 #pragma once
 
+#ifndef PCH_H
+#define PCH_H
+
+#include <SDKDDKVer.h>
+
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+// Windows Header Files
+#include <Windows.h>
+// C RunTime Header Files
+#include <stdlib.h>
+#include <malloc.h>
+#include <memory.h>
+#include <tchar.h>
+#include <chrono>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+#include <sstream>
+#include <unordered_map>
+#include <wincodec.h>
+#include <functional>
+#include <vector>
+#include <string>
+
+#include <d3d11.h>
+#include <DirectXMath.h>
+#include <D3Dcompiler.h>
+#pragma comment (lib, "d3d11.lib")
+#pragma comment (lib, "D3Dcompiler.lib")
+
+// Direct2D Stuff
+#include <d2d1_2.h>
+#include <d2d1_1.h>
+#include <d2d1.h>
+#include <dwrite.h>
+
+#pragma comment (lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
+
+using namespace DirectX;
+
+#include "lodepng.h"
+
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#include "cgltf_write.h"
+#include "cgltf.h"
+#pragma warning(pop)
+
+#endif //PCH_H
+
+
+Core\Engine.cpp:
+
+//// Engine.cpp
+#include "pch.h"
+//#include "Core/Engine.h"
+//#include "Scene/Scene.h"
+//#include "Scene/Model.h"
+//
+//Engine::Engine() : totalTime( 0 ), frameTime( 0 ) {}
+//
+//Engine::~Engine() = default;
+//
+//void Engine::Initialize( HWND hWnd, int windowWidth, int windowHeight )
+//{
+//    QueryPerformanceFrequency( &frequency );
+//    QueryPerformanceCounter( &startCounter );
+//
+//    graphicsDevice = std::make_unique<GraphicsDevice>();
+//    graphicsDevice->Initialize( hWnd, windowWidth, windowHeight );
+//
+//    shaderManager = std::make_unique<ShaderManager>( graphicsDevice.get(), "assets/shaders/" );
+//    inputManager = std::make_unique<InputManager>();
+//    camera = std::make_unique<Camera>( graphicsDevice.get() );
+//    camera->Initialize( windowWidth, windowHeight );
+//
+//    scene = std::make_unique<Scene>();
+//
+//    InitializeScene();
+//}
+//
+//void Engine::Update()
+//{
+//    QueryPerformanceCounter( &endCounter );
+//    frameTime = static_cast<double>(endCounter.QuadPart - startCounter.QuadPart) / frequency.QuadPart;
+//    totalTime += frameTime;
+//    startCounter = endCounter;
+//
+//    inputManager->Update();
+//    UpdateCamera( static_cast<float>(frameTime) );
+//    scene->Update( frameTime );
+//}
+//
+//void Engine::Render()
+//{
+//    graphicsDevice->ClearRenderTarget( { 0.0f, 0.2f, 0.4f, 1.0f } );
+//    scene->Render( graphicsDevice.get(), camera.get(), totalTime );
+//    graphicsDevice->Present();
+//}
+//
+//void Engine::HandleResize( int newWidth, int newHeight )
+//{
+//    graphicsDevice->ResizeBuffersAndViews( newWidth, newHeight );
+//    camera->changeAspectRatio( static_cast<float>(newWidth) / newHeight );
+//}
+//
+//void Engine::HandleInput( UINT message, WPARAM wParam, LPARAM lParam )
+//{
+//    inputManager->ProcessInput( message, wParam, lParam );
+//}
+//
+//void Engine::InitializeScene()
+//{
+//    // Initialize your scene here (similar to what was in DirectXManager::Initialize)
+//    // Create models, materials, etc.
+//}
+//
+//void Engine::UpdateCamera( float deltaTime )
+//{
+//    // Update camera based on input
+//    // This logic was previously in DirectXManager::Update
+//}
+
+Core\Engine.h:
+
+//#pragma once
+//
+//#include "Graphics/GraphicsDevice.h"
+//#include "Graphics/ShaderManager.h"
+//#include "Input/InputManager.h"
+//#include "Scene/Camera.h"
+//
+//class Model;
+//class Scene;
+//
+//class Engine
+//{
+//public:
+//    Engine();
+//    ~Engine();
+//
+//    void Initialize( HWND hWnd, int windowWidth, int windowHeight );
+//    void Update();
+//    void Render();
+//
+//    void HandleResize( int newWidth, int newHeight );
+//    void HandleInput( UINT message, WPARAM wParam, LPARAM lParam );
+//
+//    // Add any other necessary methods
+//
+//private:
+//    std::unique_ptr<GraphicsDevice> graphicsDevice;
+//    std::unique_ptr<ShaderManager> shaderManager;
+//    std::unique_ptr<InputManager> inputManager;
+//    std::unique_ptr<Camera> camera;
+//    std::unique_ptr<Scene> scene;
+//
+//    // Timing variables
+//    LARGE_INTEGER frequency, startCounter, endCounter;
+//    double totalTime;
+//    double frameTime;
+//
+//    void InitializeScene();
+//    void UpdateCamera( float deltaTime );
+//};
+
+Core\Indigo.cpp:
+
+// Indigo.cpp : Defines the entry point for the application.
+//
+#include "pch.h"
 #include "Indigo.h"
-#include "GraphicsDevice.h"
 
-class Camera
+#include "Core/Win32Application.h"
+#include "Graphics/DirectXManager.h"
+
+// Global Variables:
+const int windowWidth = 1600;
+const int windowHeight = 900;
+
+
+int APIENTRY wWinMain( _In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow )
 {
-public:
+	DirectXManager* dxManager = new DirectXManager();
+	Win32Application winapp;
+	winapp.Initialize( hInstance, nCmdShow, windowWidth, windowHeight );
+	dxManager->Initialize( winapp.GetHwnd(), windowWidth, windowHeight );
+	winapp.Run( dxManager );
+}
 
-	float toRadians( float degrees ) {
-		return degrees * (3.14159265359f / 180.0f);
-	}
+Core\Indigo.h:
 
-	float toDegrees( float radians ) {
-		return radians * (180.0f / 3.14159265359f);
-	}
-	Camera (GraphicsDevice* graphicsDevice) : graphicsDevice( graphicsDevice ) {}
+#pragma once
 
-	void Initialize( int windowWidth, int windowHeight);
-	void SetViewport();
-	void changeAspectRatio( float newAspectRatio );
-	void AdjustFOV( float fovChangeFactor );
-	void Zoom( float zoomFactor );
-	void Rotate( int dx, int dy );
-	void MoveCamera( float dx, float dy, float dz );
-	void stopMovement();
-	void moveForward(  );
-	void moveLeft(  );
-	void moveBackward(  );
-	void moveRight(  );
-	void Update( double deltaTime );
-	void calculateP();
-	void calculateV();
+int APIENTRY wWinMain( _In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow );
 
-	XMVECTOR getPosition() { return position; }
-	XMMATRIX getW() { return worldMatrix; }
-	XMMATRIX getV() { return viewMatrix; }
-	XMMATRIX getP() { return projectionMatrix; }
-
-private:
-	GraphicsDevice* graphicsDevice = nullptr;
-
-	const XMVECTOR WORLD_UP = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	XMVECTOR position = XMVectorSet( 0.0f, 0.0f, -10.0f, 1.0f );  // Default position
-	XMVECTOR forward = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	XMMATRIX worldMatrix;
-	XMMATRIX viewMatrix;
-	XMMATRIX projectionMatrix;
-
-	float nearPlane = 0.1f;
-	float farPlane = 1000.0f;
-	float fov = 60.0f;
-	const float FOV_CHANGE_SPEED = 3.0f;
-	const float ZOOM_CHANGE_SPEED = .15f;
-	const float ZOOM_MIN = 0.0f;
-	const float ZOOM_MAX = 200.0f;
-	const float ZOOM_DISTANCE_FACTOR = 0.4f;
-	float aspectRatio = 0.0;
-	float cameraDistance = 50.0f;
-
-	float theta = -1.5f * XM_PI; // horizontal angle
-	float phi = 1.8f;   // vertical angle
-	const float epsilon = 0.0001f; // Small offset to prevent camera from reaching limits
-	const float ROTATION_SPEED = 0.0005f; // Small offset to prevent camera from reaching limits
-
-	XMVECTOR velocity = XMVectorSet( 0, 0, 0, 0 );
-	XMVECTOR movementDirection = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	const float MOVE_SPEED = 20.0f;
-	const float acceleration = 5.0f;
-	const float dragFactor = 0.95f;
-};
-
-DirectXManager.cpp:
+Core\Win32Application.cpp:
 
 #include "pch.h"
-#include "DirectXManager.h"
+#include "resource.h"
+
+#include "Core/Win32Application.h"
+#include "Graphics/DirectXManager.h"
+
+
+HWND Win32Application::hWnd = nullptr;
+
+void Win32Application::Initialize( HINSTANCE hInstance, int nCmdShow, int windowWidth, int windowHeight )
+{
+	WNDCLASSEXW wcex{};
+	wcex.cbSize = sizeof( WNDCLASSEX );
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WindowProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon( hInstance, MAKEINTRESOURCE( IDI_Indigo ) );
+	wcex.hCursor = LoadCursor( nullptr, IDC_ARROW );
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszClassName = L"Indigo";
+	RegisterClassExW( &wcex );
+
+	RECT windowRect = { 0, 0, static_cast<LONG>(windowWidth), static_cast<LONG>(windowHeight) };
+	AdjustWindowRect( &windowRect, WS_OVERLAPPEDWINDOW, FALSE );
+
+	// Calculate centered window position
+	int screenWidth = GetSystemMetrics( SM_CXSCREEN );
+	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
+	int windowPosX = (screenWidth - (windowRect.right - windowRect.left)) / 2;
+	int windowPosY = (screenHeight - (windowRect.bottom - windowRect.top)) / 2;
+
+	hWnd = CreateWindowW( L"Indigo", L"Indigo", WS_OVERLAPPEDWINDOW,
+		windowPosX, windowPosY, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr );
+
+	// Set the window to be topmost to overlap the taskbar
+	SetWindowPos( hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE );
+
+	ShowWindow( hWnd, nCmdShow );
+	UpdateWindow( hWnd );
+}
+
+
+int Win32Application::Run( DirectXManager* dXManager )
+{
+
+	SetWindowLongPtr( hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dXManager) );
+
+	// Main message/game loop:
+	MSG msg;
+	while (true)
+	{
+		if (PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ))
+		{
+			TranslateMessage( &msg );
+			DispatchMessage( &msg );
+			if (msg.message == WM_QUIT) break;
+		}
+		else
+		{
+			dXManager->Update();
+		}
+	}
+	return (int)msg.wParam;
+}
+
+LRESULT Win32Application::WindowProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+{
+	DirectXManager* dXManager = reinterpret_cast<DirectXManager*>(GetWindowLongPtr( hWnd, GWLP_USERDATA ));
+
+	switch (message)
+	{
+	case WM_LBUTTONDOWN:
+	{
+		if (dXManager)
+		{
+			dXManager->handleLeftDown( wParam, lParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_LBUTTONUP:
+	{
+		if (dXManager)
+		{
+			dXManager->handleLeftUp( lParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_KEYDOWN:
+	{
+		if (dXManager)
+		{
+			dXManager->handleKeyDown( wParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_KEYUP:
+	{
+		if (dXManager)
+		{
+			dXManager->handleKeyUp( wParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_MOUSEMOVE:
+	{
+
+		if (dXManager)
+		{
+			dXManager->handleMouseMove( wParam, lParam );
+		}
+
+		return 0;
+		break;
+	}
+	case WM_MOUSEWHEEL:
+	{
+		if (dXManager)
+		{
+			dXManager->handleMouseWheel( wParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_ACTIVATE:
+	{
+		if (dXManager)
+		{
+			dXManager->handleLostFocus( wParam );
+		}
+
+		return 0;
+		break;
+	}
+	case WM_SETFOCUS:
+		if (dXManager)
+		{
+			dXManager->handleSetFocus();
+		}
+		return 0;
+		break;
+	case WM_SIZE:
+	{
+		if (dXManager)
+		{
+			dXManager->handleSize( lParam );
+		}
+		return 0;
+		break;
+	}
+	case WM_DESTROY:
+		PostQuitMessage( 0 );
+		return 0;
+	default:
+		return DefWindowProc( hWnd, message, wParam, lParam );
+	}
+}
+
+
+Core\Win32Application.h:
+
+#pragma once
+
+class DirectXManager;
+
+class Win32Application
+{
+public:
+	static void Initialize(HINSTANCE hInstance, int nCmdShow, int windowWidth, int windowHeight);
+	static int Run(DirectXManager* pSample);
+	static HWND GetHwnd() { return hWnd; }
+protected:
+	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+private:
+	static HWND hWnd;
+};
+
+
+Graphics\DirectXManager.cpp:
+
+#include "pch.h"
+
+#include "Graphics/DirectXManager.h"
+#include "Graphics/GraphicsDevice.h"
+#include "Graphics/ShaderManager.h"
+#include "Graphics/ShaderProgram.h"
+#include "Graphics/RenderState.h"
+#include "Graphics/Material.h"
+
+#include "Scene/Model.h"
+#include "Scene/Mesh.h"
+#include "Scene/Camera.h"
 
 
 void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
@@ -280,11 +434,6 @@ void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
 	
 	// Load Shaders
 	shaderManager = new ShaderManager(mainDevice, "assets/shaders/");
-	std::shared_ptr<ShaderProgram> shaderProgramOpaque =			shaderManager->LoadShader( "BasicVS", "BasicPS" );
-	std::shared_ptr<ShaderProgram> testshaderProgramOpaque =		shaderManager->LoadShader( "BasicVS", "testPS" );
-	std::shared_ptr<ShaderProgram> shaderProgramOpaqueTextured =	shaderManager->LoadShader( "BasicTextureVS", "BasicTexturePS" );
-	std::shared_ptr<ShaderProgram> shaderProgramTransparent =		shaderManager->LoadShader( "BasicVS", "TransparentPS" );
-	std::shared_ptr<ShaderProgram> shaderProgramOpaqueWavey =		shaderManager->LoadShader( "WaveyVS", "BasicPS" );
 
 	// Load RenderStates
 	RenderState* renderStateOpaque = new RenderState( mainDevice );
@@ -334,32 +483,24 @@ void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
 	dsDesc2.DepthFunc = D3D11_COMPARISON_LESS;             // Typical depth test
 	renderStateTransparent->CreateDepthStencilState( dsDesc2 );
 
-	Material* materialOpaque, * materialTransparent, * materialOpaqueWavey, * materialOpaqueTextured, * materialOpaqueTextured2;
-	materialOpaque = new Material( mainDevice, shaderProgramOpaque, renderStateOpaque, false);
-	materialOpaqueWavey = new Material( mainDevice, shaderProgramOpaqueWavey, renderStateOpaque, false );
-	materialTransparent = new Material( mainDevice, shaderProgramTransparent, renderStateTransparent, true );
-	materialOpaqueTextured = new Material( mainDevice, shaderProgramOpaqueTextured, renderStateOpaque, false );
-	materialOpaqueTextured->LoadTexture( "cubePretty.glb" );
-	materialOpaqueTextured2 = new Material( mainDevice, shaderProgramOpaqueTextured, renderStateOpaque, false );
-	materialOpaqueTextured2->LoadTexture( "gun.glb" );
 
-
-	Model* model;
-
-	model = new Model( mainDevice );
+	Model* model = new Model( mainDevice );
+	Material* materialOpaqueWavey = new Material( mainDevice, shaderManager->LoadShader( "WaveyVS", "BasicPS" ), renderStateOpaque, false );
 	model->AddMeshEntry( new Mesh( mainDevice, "planeWrinkly.glb" ), materialOpaqueWavey );
 	model->SetPosition( XMFLOAT3( 0.0f, -1.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 100.0f, 1.0f, 100.0f ) );
 	AddModel( model );
 
 	model = new Model( mainDevice );
-	model->AddMeshEntry( new Mesh( mainDevice, "plane.glb" ), new Material( mainDevice, testshaderProgramOpaque, renderStateOpaque , false));
+	Material* materialOpaqueCyber = new Material( mainDevice, shaderManager->LoadShader( "BasicVS", "Cyber Fuji 2020PS" ), renderStateOpaque, false );
+	model->AddMeshEntry( new Mesh( mainDevice, "plane.glb" ), materialOpaqueCyber);
 	model->SetPosition( XMFLOAT3( 0.0f, 25.0f, 50.0f ) );
 	model->SetRotation( XMFLOAT3( -1.7f, 0.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 48.0f, 1.0f, 27.0f ) );
 	AddModel( model );
 
 	model = new Model( mainDevice );
+	Material* materialOpaque = new Material( mainDevice, shaderManager->LoadShader( "BasicVS", "BasicPS" ), renderStateOpaque, false );
 	model->AddMeshEntry( new Mesh( mainDevice, "cube.glb" ), materialOpaque );
 	model->SetPosition( XMFLOAT3( 3.0f, 0.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 1.0f, 1.0f, 0.2f ) );
@@ -367,18 +508,15 @@ void DirectXManager::Initialize( HWND hWnd, int windowWidth, int windowHeight )
 	AddModel( model );
 
 	model = new Model( mainDevice );
+	Material* materialOpaqueTextured = new Material( mainDevice, shaderManager->LoadShader( "BasicTextureVS", "BasicTexturePS" ), renderStateOpaque, false );
+	materialOpaqueTextured->LoadTexture( "cubePretty.glb" );
 	model->AddMeshEntry( new Mesh( mainDevice, "cubePretty.glb" ), materialOpaqueTextured );
 	model->SetPosition( XMFLOAT3( 0.0f, 0.0f, 0.0f ) );
 	model->SetScale( XMFLOAT3( 100.0f, 100.0f, 100.0f ) );
 	AddModel( model );
 
 	model = new Model( mainDevice );
-	model->AddMeshEntry( new Mesh( mainDevice, "gun.glb" ), materialOpaqueTextured2 );
-	model->SetPosition( XMFLOAT3( 0.0f, 0.5f, 0.0f ) );
-	model->SetScale( XMFLOAT3( 1.0f, 1.0f, 1.0f ) );
-	//AddModel( model );
-
-	model = new Model( mainDevice );
+	Material* materialTransparent = new Material( mainDevice, shaderManager->LoadShader( "BasicVS", "TransparentPS" ), renderStateTransparent, true );
 	model->AddMeshEntry( new Mesh( mainDevice, "cylinderPretty.glb" ), materialTransparent );
 	AddModel( model );
 	mainControllableModel = model;
@@ -567,6 +705,12 @@ void DirectXManager::handleLeftDown( WPARAM wParam, LPARAM lParam )
 		ClientToScreen( mainDevice->GetHWND(), &center );
 		SetCursorPos( center.x, center.y );
 
+		// Constrain the cursor within the window bounds
+		RECT rect;
+		GetClientRect( mainDevice->GetHWND(), &rect );
+		MapWindowPoints( mainDevice->GetHWND(), nullptr, (POINT*)&rect, 2 );
+		ClipCursor( &rect );
+
 		lastMousePos.x = center.x;
 		lastMousePos.y = center.y;
 
@@ -579,6 +723,7 @@ void DirectXManager::handleLeftUp( LPARAM lParam )
 {
 
 }
+
 
 void DirectXManager::handleKeyDown( WPARAM wParam )
 {
@@ -607,6 +752,7 @@ void DirectXManager::handleKeyDown( WPARAM wParam )
 	{
 		ReleaseCapture();
 		ShowCursor( TRUE );  // Show the cursor when window loses focus
+		ClipCursor( nullptr );  // Release the cursor from being confined
 		isMouseCaptured = false;
 		break;
 	}
@@ -659,7 +805,7 @@ void DirectXManager::handleMouseMove( WPARAM wParam, LPARAM lParam )
 	}	
 }
 
-void DirectXManager::handleLostFocus(WPARAM wParam)
+void DirectXManager::handleLostFocus( WPARAM wParam )
 {
 	if (LOWORD( wParam ) == WA_INACTIVE) // If the window is deactivated
 	{
@@ -667,11 +813,12 @@ void DirectXManager::handleLostFocus(WPARAM wParam)
 		{
 			ReleaseCapture();
 			ShowCursor( TRUE );  // Show the cursor when window loses focus
+			ClipCursor( nullptr );  // Release the cursor from being confined
 			isMouseCaptured = false;
 		}
 	}
-
 }
+
 
 void DirectXManager::handleSetFocus()
 {
@@ -680,6 +827,7 @@ void DirectXManager::handleSetFocus()
 	timeSinceLastShaderCheck = 0.0;
 #endif
 }
+
 
 void DirectXManager::handleMouseWheel( WPARAM wParam )
 {
@@ -704,21 +852,17 @@ void DirectXManager::handleSize( LPARAM lParam )
 }
 
 
-DirectXManager.h:
+Graphics\DirectXManager.h:
 
 #pragma once
 
-#include "Indigo.h"
-
-#include "Camera.h"
-#include "GraphicsDevice.h"
-#include "Mesh.h"
-#include "RenderState.h"
-#include "ShaderProgram.h"
-#include "ShaderManager.h"
-#include "Material.h"
-#include "Model.h"
-
+class Model;
+class Mesh;
+class Material;
+class GraphicsDevice;
+class ShaderProgram;
+class ShaderManager;
+class Camera;
 
 class DirectXManager
 {
@@ -763,10 +907,10 @@ private:
 	bool keyD = false;
 };
 
-GraphicsDevice.cpp:
+Graphics\GraphicsDevice.cpp:
 
 #include "pch.h"
-#include "GraphicsDevice.h"
+#include "Graphics/GraphicsDevice.h"
 
 void GraphicsDevice::Initialize(HWND hWnd, int width, int height)
 {
@@ -913,11 +1057,9 @@ void GraphicsDevice::ResizeBuffersAndViews(int width, int height)
 }
 
 
-GraphicsDevice.h:
+Graphics\GraphicsDevice.h:
 
 #pragma once
-
-#include "Indigo.h"
 
 class GraphicsDevice
 {
@@ -948,98 +1090,14 @@ private:
 
 };
 
-Indigo.cpp:
-
-// Indigo.cpp : Defines the entry point for the application.
-//
-#include "pch.h"
-#include "Indigo.h"
-
-#define CGLTF_IMPLEMENTATION
-#define CGLTF_WRITE_IMPLEMENTATION
-#pragma warning(push)
-#pragma warning(disable: 4996)
-#include "cgltf_write.h"
-#include "cgltf.h"
-#pragma warning(pop)
-
-// Global Variables:
-const int windowWidth = 1600;
-const int windowHeight = 900;
-
-
-int APIENTRY wWinMain( _In_ HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow )
-{
-	DirectXManager* dxManager = new DirectXManager();
-	Win32Application winapp;
-	winapp.Initialize( hInstance, nCmdShow, windowWidth, windowHeight );
-	dxManager->Initialize( winapp.GetHwnd(), windowWidth, windowHeight );
-	winapp.Run( dxManager );
-}
-
-Indigo.h:
-
-#pragma once
-
-#include <SDKDDKVer.h>
-
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files
-#include <windows.h>
-// C RunTime Header Files
-#include <stdlib.h>
-#include <malloc.h>
-#include <memory.h>
-#include <tchar.h>
-
-#include "resource.h"
-#include <chrono>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-#include <sstream>
-#include <unordered_map>
-#include <wincodec.h>
-
-#include "lodepng.h"
-
-#include <d3d11.h>
-#include <DirectXMath.h>
-#include <D3Dcompiler.h>
-#pragma comment (lib, "d3d11.lib")
-#pragma comment (lib, "D3Dcompiler.lib")
-
-// Direct2D Stuff
-#include <d2d1_2.h>
-#include <d2d1_1.h>
-#include <d2d1.h>
-#include <dwrite.h>
-
-#pragma comment (lib, "d2d1.lib")
-#pragma comment(lib, "dwrite.lib")
-
-using namespace DirectX;
-
-#include "Win32Application.h"
-#include "DirectXManager.h"
-#include "Camera.h"
-#include "GraphicsDevice.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "Model.h"
-#include "RenderState.h"
-#include "ShaderProgram.h"
-
-
-Material.cpp:
+Graphics\Material.cpp:
 
 #include "pch.h"
-#include "Material.h"
-#include "cgltf.h"
+
+#include "Graphics/GraphicsDevice.h"
+#include "Graphics/Material.h"
+#include "Graphics/ShaderProgram.h"
+#include "Graphics/RenderState.h"
 
 void Material::LoadTexture( LPCSTR filenameIn ) {
     std::string baseDir = "assets/meshes/";
@@ -1153,13 +1211,14 @@ void Material::Setup()
 
 
 
-Material.h:
+Graphics\Material.h:
 
 #pragma once
 
-#include "Indigo.h"
-#include "ShaderProgram.h"
-#include "RenderState.h"
+class ShaderProgram;
+class RenderState;
+class GraphicsDevice;
+struct ConstantBuffer;
 
 class Material
 {
@@ -1184,320 +1243,12 @@ private:
 	bool transparent = false;
 };
 
-Mesh.cpp:
-
-#include "pch.h"
-#include "Model.h"
-#include "Mesh.h"
-#include "cgltf.h"
-
-Mesh::Mesh(GraphicsDevice* graphicsDevice, LPCSTR filename)
-{
-    this->graphicsDevice = graphicsDevice;
-    LoadMesh(filename);
-}
-
-void Mesh::LoadMesh( LPCSTR filenameIn ) {
-    std::string baseDir = "assets/meshes/";
-    std::string filename = baseDir + filenameIn;
-
-    // Load the glTF file using cgltf
-    cgltf_options options = {};
-    cgltf_data* data = NULL;
-    cgltf_result result = cgltf_parse_file( &options, filename.c_str(), &data );
-
-    if (result != cgltf_result_success) {
-        assert( false );
-        return;
-    }
-
-    result = cgltf_load_buffers( &options, data, filename.c_str() );
-    if (result != cgltf_result_success) {
-        assert( false );
-        cgltf_free( data );
-        return;
-    }
-
-    if (data->meshes_count == 0) {
-        assert( false ); // No mesh found in the glTF file
-        cgltf_free( data );
-        return;
-    }
-
-    vertices.clear();
-    indices.clear();
-
-    for (int meshid = 0; meshid < data->meshes_count; ++meshid)
-    {
-        cgltf_mesh* mesh = &data->meshes[meshid]; // Assume we want the first mesh
-        cgltf_primitive* primitive = &mesh->primitives[0]; // Assume we want the first primitive
-
-        if (!primitive->attributes_count || !primitive->indices) {
-            assert( false ); // Primitive doesn't have vertices or indices
-            cgltf_free( data );
-            return;
-        }
-
-        // Load vertex data
-        for (size_t i = 0; i < primitive->attributes_count; i++) {
-            cgltf_attribute* attribute = &primitive->attributes[i];
-            cgltf_accessor* accessor = attribute->data;
-            cgltf_buffer_view* bufferView = accessor->buffer_view;
-            const char* bufferData = (char*)bufferView->buffer->data + bufferView->offset;
-
-            if (attribute->type == cgltf_attribute_type_position) {
-                for (size_t j = 0; j < accessor->count; j++) {
-                    float* vertex_data = (float*)(bufferData + accessor->stride * j);
-                    VertexType vertex{};
-                    vertex.position = DirectX::XMFLOAT4( vertex_data[0], vertex_data[1], vertex_data[2], 1 );
-                    vertices.push_back( vertex );
-                }
-            }
-            else if (attribute->type == cgltf_attribute_type_texcoord) {
-                for (size_t j = 0; j < accessor->count; j++) {
-                    float* texcoord_data = (float*)(bufferData + accessor->stride * j);
-                    vertices[j].texCoords = DirectX::XMFLOAT2( texcoord_data[0], texcoord_data[1] );
-                }
-            }
-            else if (attribute->type == cgltf_attribute_type_normal) {
-                for (size_t j = 0; j < accessor->count; j++) {
-                    float* normal_data = (float*)(bufferData + accessor->stride * j);
-                    vertices[j].normal = DirectX::XMFLOAT3( normal_data[0], normal_data[1], normal_data[2] );
-                }
-            }
-            // Add more cases if you need other attributes.
-        }
-
-        // Load index data
-        cgltf_accessor* indexAccessor = primitive->indices;
-        cgltf_buffer_view* indexBufferView = indexAccessor->buffer_view;
-        const char* indexBufferData = (char*)indexBufferView->buffer->data + indexBufferView->offset;
-
-        for (size_t i = 0; i < indexAccessor->count; i++) {
-            unsigned int index;
-            if (indexAccessor->component_type == cgltf_component_type_r_16u) {
-                index = *(unsigned short*)(indexBufferData + indexAccessor->stride * i);
-            }
-            else if (indexAccessor->component_type == cgltf_component_type_r_32u) {
-                index = *(unsigned int*)(indexBufferData + indexAccessor->stride * i);
-            }
-            else {
-                assert( false );  // Unsupported index type or handle other cases
-            }
-            indices.push_back( index );
-
-        }
-    }
-    
-    size_t bufferSize = sizeof(VertexType) * vertices.size();
-    assert(bufferSize <= UINT_MAX);  // Ensure the buffer size doesn't exceed the maximum value for UINT
-
-    // Create and fill vertex buffer
-    D3D11_BUFFER_DESC vertexBufferDesc = {};
-    vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    vertexBufferDesc.ByteWidth = static_cast<UINT>(bufferSize);
-    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA vertexData = {};
-    vertexData.pSysMem = vertices.data();
-
-    HRESULT hr = graphicsDevice->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
-    assert(SUCCEEDED(hr));
-
-    size_t indexBufferSize = sizeof(unsigned int) * indices.size();
-    assert(indexBufferSize <= UINT_MAX);  // Ensure the buffer size doesn't exceed the maximum value for UINT
-
-    // Create and fill index buffer
-    D3D11_BUFFER_DESC indexBufferDesc = {};
-    indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    indexBufferDesc.ByteWidth = static_cast<UINT>(indexBufferSize);
-    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA indexData = {};
-    indexData.pSysMem = indices.data();
-
-    hr = graphicsDevice->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
-    assert(SUCCEEDED(hr));
-    cgltf_free( data );
-
-}
-
-void Mesh::Draw()
-{
-    graphicsDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    // Set Input Assembler
-    UINT vertexStride = sizeof(VertexType);
-    UINT vertexOffset = 0;
-    graphicsDevice->GetDeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &vertexOffset);
-    graphicsDevice->GetDeviceContext()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-    size_t numIndices = indices.size();
-    assert(numIndices <= UINT_MAX);  // Ensure the number of indices doesn't exceed the maximum value for UINT
-    graphicsDevice->GetDeviceContext()->DrawIndexed(static_cast<UINT>(numIndices), 0, 0);
-}
-
-
-Mesh.h:
-
-#pragma once
-
-#include "Indigo.h"
-#include "GraphicsDevice.h"
-
-class Model;
-
-struct VertexType
-{
-	XMFLOAT4 position;
-	XMFLOAT2 texCoords; //uv
-	XMFLOAT3 normal;
-};
-
-class Mesh
-{
-public:
-	Mesh( GraphicsDevice* graphicsDevice, LPCSTR filename );
-	void SetParentModel( Model* model ) { parentModel = model; }
-
-	Model* GetParentModel() const { return parentModel; }
-	void LoadMesh( LPCSTR );
-	void Draw();
-private:
-	Model* parentModel = nullptr;
-	std::vector<VertexType> vertices;
-	std::vector<unsigned int> indices;
-
-	GraphicsDevice* graphicsDevice = nullptr;
-	ID3D11Buffer* vertexBuffer = nullptr;
-	ID3D11Buffer* indexBuffer = nullptr;
-};
-
-Model.cpp:
-
-#include "pch.h"
-#include "Model.h"
-#include "Mesh.h"
-
-void Model::AddMeshEntry(Mesh* mesh, Material* material)
-{
-    MeshEntry entry;
-    mesh->SetParentModel( this );
-    entry.mesh = mesh;
-    entry.material = material;
-    meshEntries.push_back(entry);
-}
-
-void Model::SetPosition(const DirectX::XMFLOAT3& pos)
-{
-    position = pos;
-    UpdateTransformationMatrix();
-}
-
-void Model::SetRotation(const DirectX::XMFLOAT3& rot)
-{
-    rotation = rot;
-    UpdateTransformationMatrix();
-}
-
-void Model::SetScale(const DirectX::XMFLOAT3& scl)
-{
-    scale = scl;
-    UpdateTransformationMatrix();
-}
-
-void Model::UpdateTransformationMatrix()
-{
-    // Create individual matrices
-    DirectX::XMMATRIX matScale = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
-    DirectX::XMMATRIX matRotate = DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
-    DirectX::XMMATRIX matTranslate = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-
-    // Combine them to get the final transformation matrix
-    transformationMatrix = matScale * matRotate * matTranslate;
-}
-
-XMMATRIX Model::GetTransformationMatrix()
-{
-    return transformationMatrix;
-}
-
-
-
-Model.h:
-
-#pragma once
-
-#include "Indigo.h"
-#include "GraphicsDevice.h"
-#include "Material.h"
-
-class Mesh;
-
-class Model {
-public:
-	struct MeshEntry {
-		Mesh* mesh;
-		Material* material;
-	};
-
-	Model( GraphicsDevice* graphicsDevice ) : graphicsDevice( graphicsDevice ) {}
-
-	void AddMeshEntry( Mesh* mesh, Material* material );
-	void SetPosition( const DirectX::XMFLOAT3& pos );
-	void SetRotation( const DirectX::XMFLOAT3& rot );
-	void SetScale( const DirectX::XMFLOAT3& scl );
-	DirectX::XMFLOAT3 GetPosition() { return position; }
-	DirectX::XMFLOAT3 GetRotation( ) { return rotation; }
-	DirectX::XMFLOAT3 GetScale( ) { return scale; }
-	void UpdateTransformationMatrix();
-	XMMATRIX GetTransformationMatrix();
-	// Functions to draw the model, set materials, etc.
-	std::vector<MeshEntry> GetMeshEntries() { return meshEntries; }
-
-private:
-
-	std::vector<MeshEntry> meshEntries;
-
-	DirectX::XMFLOAT3 position{ 0.0f, 0.0f, 0.0f };
-	DirectX::XMFLOAT3 rotation{ 0.0f, 0.0f, 0.0f }; // Represented as Euler angles in this example
-	DirectX::XMFLOAT3 scale{ 1.0f, 1.0f, 1.0f };
-
-	DirectX::XMMATRIX transformationMatrix = XMMatrixIdentity();
-
-	GraphicsDevice* graphicsDevice;
-};
-
-pch.cpp:
-
-// pch.cpp: source file corresponding to the pre-compiled header
+Graphics\RenderState.cpp:
 
 #include "pch.h"
 
-// When you are using pre-compiled headers, this source file is necessary for compilation to succeed.
-
-
-pch.h:
-
-// pch.h: This is a precompiled header file.
-// Files listed below are compiled only once, improving build performance for future builds.
-// This also affects IntelliSense performance, including code completion and many code browsing features.
-// However, files listed here are ALL re-compiled if any one of them is updated between builds.
-// Do not add files here that you will be updating frequently as this negates the performance advantage.
-
-#ifndef PCH_H
-#define PCH_H
-
-// add headers that you want to pre-compile here
-#include "Indigo.h"
-
-#endif //PCH_H
-
-
-RenderState.cpp:
-
-#include "pch.h"
-#include "RenderState.h"
+#include "Graphics/GraphicsDevice.h"
+#include "Graphics/RenderState.h"
 
 RenderState::~RenderState()
 {
@@ -1557,11 +1308,11 @@ void RenderState::SetState()
 	graphicsDevice->GetDeviceContext()->OMSetDepthStencilState( depthStencilState, 0 );
 }
 
-RenderState.h:
+Graphics\RenderState.h:
 
 #pragma once
 
-#include "Indigo.h"
+class GraphicsDevice;
 
 class RenderState
 {
@@ -1587,33 +1338,13 @@ private:
 	GraphicsDevice* graphicsDevice = nullptr;
 };
 
-Scene.cpp:
+Graphics\ShaderManager.cpp:
 
 #include "pch.h"
-#include "Scene.h"
 
-void Scene::LoadFromFile( const std::string& filepath )
-{
-}
-
-
-Scene.h:
-
-#pragma once
-
-#include "Indigo.h"
-
-class Scene {
-public:
-    void LoadFromFile( const std::string& filepath );
-private:
-    std::vector<Model> models;
-};
-
-ShaderManager.cpp:
-
-#include "pch.h"
-#include "ShaderManager.h"
+#include "Graphics/ShaderManager.h"
+#include "Graphics/ShaderProgram.h"
+#include "Graphics/GraphicsDevice.h"
 
 
 namespace fs = std::filesystem;
@@ -1750,11 +1481,12 @@ std::string ShaderManager::GenerateShaderKey( const std::string& vsName, const s
     return vsName + "_" + psName;
 }
 
-ShaderManager.h:
+Graphics\ShaderManager.h:
 
 #pragma once
 
-#include "Indigo.h"
+class GraphicsDevice;
+class ShaderProgram;
 
 class ShaderManager
 {
@@ -1790,10 +1522,12 @@ private:
 
 
 
-ShaderProgram.cpp:
+Graphics\ShaderProgram.cpp:
 
 #include "pch.h"
-#include "ShaderProgram.h"
+
+#include "Graphics/GraphicsDevice.h"
+#include "Graphics/ShaderProgram.h"
 
 void ShaderProgram::LoadShader( LPCSTR VSFilename, LPCSTR PSFilename )
 {
@@ -1809,7 +1543,7 @@ void ShaderProgram::LoadShader( LPCSTR VSFilename, LPCSTR PSFilename )
 	assert( SUCCEEDED( hr ) );
 
 	// Assign input layout
-	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
+	const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
 		  { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		  { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		  { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
@@ -2001,11 +1735,9 @@ std::vector<byte> ShaderProgram::LoadShaderFile( const std::string& filenameWith
 
 
 
-ShaderProgram.h:
+Graphics\ShaderProgram.h:
 
 #pragma once
-
-#include "Indigo.h"
 
 struct ConstantBuffer
 {
@@ -2044,186 +1776,644 @@ private:
 	ID3D11Buffer* constantBuffer = nullptr;
 };
 
-Win32Application.cpp:
-
-#include "pch.h"
-#include "Win32Application.h"
-
-HWND Win32Application::hWnd = nullptr;
-
-void Win32Application::Initialize( HINSTANCE hInstance, int nCmdShow, int windowWidth, int windowHeight )
-{
-	WNDCLASSEXW wcex{};
-	wcex.cbSize = sizeof( WNDCLASSEX );
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WindowProc;
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
-	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon( hInstance, MAKEINTRESOURCE( IDI_Indigo ) );
-	wcex.hCursor = LoadCursor( nullptr, IDC_ARROW );
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszClassName = L"Indigo";
-	RegisterClassExW( &wcex );
-
-	RECT windowRect = { 0, 0, static_cast<LONG>(windowWidth), static_cast<LONG>(windowHeight) };
-	AdjustWindowRect( &windowRect, WS_OVERLAPPEDWINDOW, FALSE );
-
-	// Calculate centered window position
-	int screenWidth = GetSystemMetrics( SM_CXSCREEN );
-	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
-	int windowPosX = (screenWidth - (windowRect.right - windowRect.left)) / 2;
-	int windowPosY = (screenHeight - (windowRect.bottom - windowRect.top)) / 2;
-
-	hWnd = CreateWindowW( L"Indigo", L"Indigo", WS_OVERLAPPEDWINDOW,
-		windowPosX, windowPosY, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr );
-
-	// Set the window to be topmost to overlap the taskbar
-	SetWindowPos( hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE );
-
-	ShowWindow( hWnd, nCmdShow );
-	UpdateWindow( hWnd );
-}
-
-
-int Win32Application::Run( DirectXManager* dXManager )
-{
-
-	SetWindowLongPtr( hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dXManager) );
-
-	// Main message/game loop:
-	MSG msg;
-	while (true)
-	{
-		if (PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ))
-		{
-			TranslateMessage( &msg );
-			DispatchMessage( &msg );
-			if (msg.message == WM_QUIT) break;
-		}
-		else
-		{
-			dXManager->Update();
-		}
-	}
-	return (int)msg.wParam;
-}
-
-LRESULT Win32Application::WindowProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
-{
-	DirectXManager* dXManager = reinterpret_cast<DirectXManager*>(GetWindowLongPtr( hWnd, GWLP_USERDATA ));
-
-	switch (message)
-	{
-	case WM_LBUTTONDOWN:
-	{
-		if (dXManager)
-		{
-			dXManager->handleLeftDown( wParam, lParam );
-		}
-		return 0;
-		break;
-	}
-	case WM_LBUTTONUP:
-	{
-		if (dXManager)
-		{
-			dXManager->handleLeftUp( lParam );
-		}
-		return 0;
-		break;
-	}
-	case WM_KEYDOWN:
-	{
-		if (dXManager)
-		{
-			dXManager->handleKeyDown( wParam );
-		}
-		return 0;
-		break;
-	}
-	case WM_KEYUP:
-	{
-		if (dXManager)
-		{
-			dXManager->handleKeyUp( wParam );
-		}
-		return 0;
-		break;
-	}
-	case WM_MOUSEMOVE:
-	{
-
-		if (dXManager)
-		{
-			dXManager->handleMouseMove( wParam, lParam );
-		}
-
-		return 0;
-		break;
-	}
-	case WM_MOUSEWHEEL:
-	{
-		if (dXManager)
-		{
-			dXManager->handleMouseWheel( wParam );
-		}
-		return 0;
-		break;
-	}
-	case WM_ACTIVATE:
-	{
-		if (dXManager)
-		{
-			dXManager->handleLostFocus( wParam );
-		}
-
-		return 0;
-		break;
-	}
-	case WM_SETFOCUS:
-		if (dXManager)
-		{
-			dXManager->handleSetFocus();
-		}
-		return 0;
-		break;
-	case WM_SIZE:
-	{
-		if (dXManager)
-		{
-			dXManager->handleSize( lParam );
-		}
-		return 0;
-		break;
-	}
-	case WM_DESTROY:
-		PostQuitMessage( 0 );
-		return 0;
-	default:
-		return DefWindowProc( hWnd, message, wParam, lParam );
-	}
-}
-
-
-Win32Application.h:
+Input\InputManager.cpp:
 
 #pragma once
 
-#include "Indigo.h"
-#include "DirectXManager.h"
+#include "pch.h"
+#include "Input/InputManager.h"
 
-class Win32Application
+void InputManager::Update()
 {
-public:
-	static void Initialize(HINSTANCE hInstance, int nCmdShow, int windowWidth, int windowHeight);
-	static int Run(DirectXManager* pSample);
-	static HWND GetHwnd() { return hWnd; }
-protected:
-	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    // Process held keys, update time-based input, etc.
+}
 
-private:
-	static HWND hWnd;
+void InputManager::MapAction( const std::string& actionName, InputType type, int code )
+{
+    actionMap[actionName].push_back( { type, code, InputState::Pressed } );
+}
+
+void InputManager::BindAction( const std::string& actionName, InputState state, ActionCallback callback )
+{
+    actionCallbacks[actionName][state].push_back( callback );
+}
+
+void InputManager::ProcessInput( InputType type, int code, InputState state )
+{
+    for (const auto& [actionName, events] : actionMap)
+    {
+        for (const auto& event : events)
+        {
+            if (event.type == type && event.code == code)
+            {
+                for (const auto& callback : actionCallbacks[actionName][state])
+                {
+                    callback( { type, code, state } );
+                }
+            }
+        }
+    }
+}
+
+Input\InputManager.h:
+
+#pragma once
+
+
+enum class InputType { Keyboard, Mouse, Gamepad };
+enum class InputState { Pressed, Released, Held };
+
+struct InputEvent
+{
+    InputType type;
+    int code;
+    InputState state;
 };
 
+using ActionCallback = std::function<void( const InputEvent& )>;
+
+class InputManager
+{
+public:
+    void Update();
+
+    void MapAction( const std::string& actionName, InputType type, int code );
+    void BindAction( const std::string& actionName, InputState state, ActionCallback callback );
+
+    void ProcessInput( InputType type, int code, InputState state );
+
+private:
+    std::unordered_map<std::string, std::vector<InputEvent>> actionMap;
+    std::unordered_map<std::string, std::unordered_map<InputState, std::vector<ActionCallback>>> actionCallbacks;
+};
+
+Scene\Camera.cpp:
+
+#include "pch.h"
+
+#include "Graphics/GraphicsDevice.h"
+
+#include "Scene/Camera.h"
+
+void Camera::Initialize( int windowWidth, int windowHeight)
+{
+	SetViewport();
+	aspectRatio = (float)windowWidth / (float)windowHeight;
+
+	// Initialize and set View, Projection, and World Matrices
+	calculateV();
+	calculateP();
+	worldMatrix = XMMatrixIdentity();
+}
+
+void Camera::SetViewport()
+{
+	// Set Viewport
+	RECT winRect;
+	GetClientRect( graphicsDevice->GetHWND(), &winRect );
+	D3D11_VIEWPORT viewport = {
+		0.0f,
+		0.0f,
+		(FLOAT)(winRect.right - winRect.left),
+		(FLOAT)(winRect.bottom - winRect.top),
+		0.0f,
+		1.0f };
+	graphicsDevice->GetDeviceContext()->RSSetViewports( 1, &viewport );
+}
+
+void Camera::changeAspectRatio( float newAspectRatio )
+{
+	aspectRatio = newAspectRatio;
+	calculateP();
+}
+
+void Camera::AdjustFOV( float fovChangeFactor )
+{
+	// Convert FOV to radians
+	float fovInRadians = toRadians( fov );
+
+	// Adjust the FOV based on the zoom factor
+	fovInRadians += fovChangeFactor * toRadians( FOV_CHANGE_SPEED );
+
+	// Optional: Clamp the FOV to prevent it from becoming too narrow or too wide
+	fovInRadians = max( toRadians( 0.1f ), min( toRadians( 120.0f ), fovInRadians ) );
+
+	// Convert the clamped FOV back to degrees
+	fov = toDegrees( fovInRadians );
+
+	calculateP();
+}
+
+void Camera::Zoom( float zoomFactor )
+{
+	float speedMultiplier = 1.0f + std::fabs( cameraDistance ) * ZOOM_DISTANCE_FACTOR;
+	cameraDistance = std::clamp( cameraDistance + zoomFactor * ZOOM_CHANGE_SPEED * speedMultiplier, ZOOM_MIN, ZOOM_MAX );
+}
+
+
+void Camera::Rotate( int dx, int dy )
+{
+
+	theta -= dx * ROTATION_SPEED;
+
+	// Wrap theta around [0, 2*pi]
+	theta = fmodf( theta, XM_2PI );
+	if (theta < 0.0f) {  // handle negative values
+		theta += XM_2PI;
+	}
+
+	phi += dy * ROTATION_SPEED;
+	phi = max( epsilon, min( XM_PI - epsilon, phi ) );
+}
+
+void Camera::MoveCamera( float dx, float dy, float dz )
+{
+	// Calculate the forward, right, and up vectors
+	float x = sinf( phi ) * cosf( theta );
+	float y = cosf( phi );
+	float z = sinf( phi ) * sinf( theta );
+
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	XMVECTOR right = XMVector3Cross( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), forward ); // Right vector using world up
+	XMVECTOR up = XMVector3Cross( forward, right ); // Up vector
+
+	// Scale the movement based on the desired dx, dy, and dz
+	position += forward * dz;
+	position += right * dx;
+	position += up * dy;
+
+	calculateV(); // Recalculate the view matrix with the updated position
+}
+
+void Camera::stopMovement()
+{
+	movementDirection = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+}
+
+void Camera::moveForward()
+{
+	float sinPhi = sinf( phi );
+	float x = sinPhi * cosf( theta );
+	float y = 0.0f; // cosf( phi );
+	float z = sinPhi * sinf( theta );
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	movementDirection += forward;
+}
+
+void Camera::moveLeft()
+{
+	float sinPhi = sinf( phi );
+	float x = sinPhi * cosf( theta );
+	float y = 0.0f; // cosf( phi );
+	float z = sinPhi * sinf( theta );
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	XMVECTOR right = XMVector3Cross( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), forward );
+	movementDirection -= right;
+}
+
+void Camera::moveBackward(  )
+{
+	float sinPhi = sinf( phi );
+	float x = sinPhi * cosf( theta );
+	float y = 0.0f; // cosf( phi );
+	float z = sinPhi * sinf( theta );
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	movementDirection -= forward;
+}
+
+void Camera::moveRight(  )
+{
+	float sinPhi = sinf( phi );
+	float x = sinPhi * cosf( theta );
+	float y = 0.0f; // cosf( phi );
+	float z = sinPhi * sinf( theta );
+	XMVECTOR forward = XMVectorSet( x, y, z, 0.0f );
+	XMVECTOR right = XMVector3Cross( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), forward );
+	movementDirection += right;
+}
+
+void Camera::Update( double deltaTime )
+{
+	float fdeltaTime = static_cast<float>(deltaTime);
+	movementDirection = XMVector3Normalize( movementDirection );
+
+	// Compute the target velocity based on the desired direction of movement.
+	XMVECTOR targetVelocity = movementDirection * MOVE_SPEED;
+
+	// Accelerate towards the target velocity
+	XMVECTOR accelerationVector = (targetVelocity - velocity) * acceleration;
+	velocity += accelerationVector * fdeltaTime;
+
+	// Apply drag to the velocity
+	velocity *= powf( dragFactor, fdeltaTime );
+
+	// Update camera position based on velocity
+	position += velocity * fdeltaTime;
+
+	calculateV();  // Update view matrix with new position.
+}
+
+
+void Camera::calculateP()
+{
+	// Recalculate the projection matrix with the new FOV
+	projectionMatrix = XMMatrixPerspectiveFovLH( toRadians( fov ), aspectRatio, nearPlane, farPlane );
+}
+
+void Camera::calculateV()
+{
+	// Calculate direction based on angles
+	XMVECTOR direction = XMVectorSet(
+		sinf( phi ) * cosf( theta ),
+		cosf( phi ),
+		sinf( phi ) * sinf( theta ),
+		0.0f
+	);
+
+	// Determine Eye and At positions based on distance
+	XMVECTOR Eye = position - direction * cameraDistance;
+	XMVECTOR At = position + direction;  // Always look forward
+
+	// Compute the view matrix
+	viewMatrix = XMMatrixLookAtLH( Eye, At, WORLD_UP );
+}
+
+
+
+Scene\Camera.h:
+
+#pragma once
+
+class GraphicsDevice;
+
+class Camera
+{
+public:
+
+	float toRadians( float degrees ) {
+		return degrees * (3.14159265359f / 180.0f);
+	}
+
+	float toDegrees( float radians ) {
+		return radians * (180.0f / 3.14159265359f);
+	}
+	Camera (GraphicsDevice* graphicsDevice) : graphicsDevice( graphicsDevice ) {}
+
+	void Initialize( int windowWidth, int windowHeight);
+	void SetViewport();
+	void changeAspectRatio( float newAspectRatio );
+	void AdjustFOV( float fovChangeFactor );
+	void Zoom( float zoomFactor );
+	void Rotate( int dx, int dy );
+	void MoveCamera( float dx, float dy, float dz );
+	void stopMovement();
+	void moveForward(  );
+	void moveLeft(  );
+	void moveBackward(  );
+	void moveRight(  );
+	void Update( double deltaTime );
+	void calculateP();
+	void calculateV();
+
+	XMVECTOR getPosition() { return position; }
+	XMMATRIX getW() { return worldMatrix; }
+	XMMATRIX getV() { return viewMatrix; }
+	XMMATRIX getP() { return projectionMatrix; }
+
+private:
+	GraphicsDevice* graphicsDevice = nullptr;
+
+	const XMVECTOR WORLD_UP = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMVECTOR position = XMVectorSet( 0.0f, 0.0f, -10.0f, 1.0f );  // Default position
+	XMVECTOR forward = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	XMMATRIX worldMatrix;
+	XMMATRIX viewMatrix;
+	XMMATRIX projectionMatrix;
+
+	float nearPlane = 0.1f;
+	float farPlane = 1000.0f;
+	float fov = 60.0f;
+	const float FOV_CHANGE_SPEED = 3.0f;
+	const float ZOOM_CHANGE_SPEED = .15f;
+	const float ZOOM_MIN = 0.0f;
+	const float ZOOM_MAX = 200.0f;
+	const float ZOOM_DISTANCE_FACTOR = 0.4f;
+	float aspectRatio = 0.0;
+	float cameraDistance = 50.0f;
+
+	float theta = -1.5f * XM_PI; // horizontal angle
+	float phi = 1.8f;   // vertical angle
+	const float epsilon = 0.0001f; // Small offset to prevent camera from reaching limits
+	const float ROTATION_SPEED = 0.0005f; // Small offset to prevent camera from reaching limits
+
+	XMVECTOR velocity = XMVectorSet( 0, 0, 0, 0 );
+	XMVECTOR movementDirection = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	const float MOVE_SPEED = 20.0f;
+	const float acceleration = 5.0f;
+	const float dragFactor = 0.95f;
+};
+
+Scene\Mesh.cpp:
+
+#include "pch.h"
+
+#include "Graphics/GraphicsDevice.h"
+
+#include "Scene/Model.h"
+#include "Scene/Mesh.h"
+
+Mesh::Mesh(GraphicsDevice* graphicsDevice, LPCSTR filename)
+{
+    this->graphicsDevice = graphicsDevice;
+    LoadMesh(filename);
+}
+
+void Mesh::LoadMesh( LPCSTR filenameIn ) {
+    std::string baseDir = "assets/meshes/";
+    std::string filename = baseDir + filenameIn;
+
+    // Load the glTF file using cgltf
+    cgltf_options options = {};
+    cgltf_data* data = NULL;
+    cgltf_result result = cgltf_parse_file( &options, filename.c_str(), &data );
+
+    if (result != cgltf_result_success) {
+        assert( false );
+        return;
+    }
+
+    result = cgltf_load_buffers( &options, data, filename.c_str() );
+    if (result != cgltf_result_success) {
+        assert( false );
+        cgltf_free( data );
+        return;
+    }
+
+    if (data->meshes_count == 0) {
+        assert( false ); // No mesh found in the glTF file
+        cgltf_free( data );
+        return;
+    }
+
+    vertices.clear();
+    indices.clear();
+
+    for (int meshid = 0; meshid < data->meshes_count; ++meshid)
+    {
+        cgltf_mesh* mesh = &data->meshes[meshid]; // Assume we want the first mesh
+        cgltf_primitive* primitive = &mesh->primitives[0]; // Assume we want the first primitive
+
+        if (!primitive->attributes_count || !primitive->indices) {
+            assert( false ); // Primitive doesn't have vertices or indices
+            cgltf_free( data );
+            return;
+        }
+
+        // Load vertex data
+        for (size_t i = 0; i < primitive->attributes_count; i++) {
+            cgltf_attribute* attribute = &primitive->attributes[i];
+            cgltf_accessor* accessor = attribute->data;
+            cgltf_buffer_view* bufferView = accessor->buffer_view;
+            const char* bufferData = (char*)bufferView->buffer->data + bufferView->offset;
+
+            if (attribute->type == cgltf_attribute_type_position) {
+                for (size_t j = 0; j < accessor->count; j++) {
+                    float* vertex_data = (float*)(bufferData + accessor->stride * j);
+                    VertexType vertex{};
+                    vertex.position = DirectX::XMFLOAT4( vertex_data[0], vertex_data[1], vertex_data[2], 1 );
+                    vertices.push_back( vertex );
+                }
+            }
+            else if (attribute->type == cgltf_attribute_type_texcoord) {
+                for (size_t j = 0; j < accessor->count; j++) {
+                    float* texcoord_data = (float*)(bufferData + accessor->stride * j);
+                    vertices[j].texCoords = DirectX::XMFLOAT2( texcoord_data[0], texcoord_data[1] );
+                }
+            }
+            else if (attribute->type == cgltf_attribute_type_normal) {
+                for (size_t j = 0; j < accessor->count; j++) {
+                    float* normal_data = (float*)(bufferData + accessor->stride * j);
+                    vertices[j].normal = DirectX::XMFLOAT3( normal_data[0], normal_data[1], normal_data[2] );
+                }
+            }
+            // Add more cases if you need other attributes.
+        }
+
+        // Load index data
+        cgltf_accessor* indexAccessor = primitive->indices;
+        cgltf_buffer_view* indexBufferView = indexAccessor->buffer_view;
+        const char* indexBufferData = (char*)indexBufferView->buffer->data + indexBufferView->offset;
+
+        for (size_t i = 0; i < indexAccessor->count; i++) {
+            unsigned int index;
+            if (indexAccessor->component_type == cgltf_component_type_r_16u) {
+                index = *(unsigned short*)(indexBufferData + indexAccessor->stride * i);
+            }
+            else if (indexAccessor->component_type == cgltf_component_type_r_32u) {
+                index = *(unsigned int*)(indexBufferData + indexAccessor->stride * i);
+            }
+            else {
+                assert( false );  // Unsupported index type or handle other cases
+            }
+            indices.push_back( index );
+
+        }
+    }
+    
+    size_t bufferSize = sizeof(VertexType) * vertices.size();
+    assert(bufferSize <= UINT_MAX);  // Ensure the buffer size doesn't exceed the maximum value for UINT
+
+    // Create and fill vertex buffer
+    D3D11_BUFFER_DESC vertexBufferDesc = {};
+    vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    vertexBufferDesc.ByteWidth = static_cast<UINT>(bufferSize);
+    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA vertexData = {};
+    vertexData.pSysMem = vertices.data();
+
+    HRESULT hr = graphicsDevice->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
+    assert(SUCCEEDED(hr));
+
+    size_t indexBufferSize = sizeof(unsigned int) * indices.size();
+    assert(indexBufferSize <= UINT_MAX);  // Ensure the buffer size doesn't exceed the maximum value for UINT
+
+    // Create and fill index buffer
+    D3D11_BUFFER_DESC indexBufferDesc = {};
+    indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    indexBufferDesc.ByteWidth = static_cast<UINT>(indexBufferSize);
+    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA indexData = {};
+    indexData.pSysMem = indices.data();
+
+    hr = graphicsDevice->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
+    assert(SUCCEEDED(hr));
+    cgltf_free( data );
+
+}
+
+void Mesh::Draw()
+{
+    graphicsDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // Set Input Assembler
+    UINT vertexStride = sizeof(VertexType);
+    UINT vertexOffset = 0;
+    graphicsDevice->GetDeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &vertexOffset);
+    graphicsDevice->GetDeviceContext()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+    size_t numIndices = indices.size();
+    assert(numIndices <= UINT_MAX);  // Ensure the number of indices doesn't exceed the maximum value for UINT
+    graphicsDevice->GetDeviceContext()->DrawIndexed(static_cast<UINT>(numIndices), 0, 0);
+}
+
+
+Scene\Mesh.h:
+
+#pragma once
+
+class Model;
+
+struct VertexType
+{
+	XMFLOAT4 position;
+	XMFLOAT2 texCoords; //uv
+	XMFLOAT3 normal;
+};
+
+class Mesh
+{
+public:
+	Mesh( GraphicsDevice* graphicsDevice, LPCSTR filename );
+	void SetParentModel( Model* model ) { parentModel = model; }
+
+	Model* GetParentModel() const { return parentModel; }
+	void LoadMesh( LPCSTR );
+	void Draw();
+private:
+	Model* parentModel = nullptr;
+	std::vector<VertexType> vertices;
+	std::vector<unsigned int> indices;
+
+	GraphicsDevice* graphicsDevice = nullptr;
+	ID3D11Buffer* vertexBuffer = nullptr;
+	ID3D11Buffer* indexBuffer = nullptr;
+};
+
+Scene\Model.cpp:
+
+#include "pch.h"
+#include "Model.h"
+#include "Mesh.h"
+
+void Model::AddMeshEntry(Mesh* mesh, Material* material)
+{
+    MeshEntry entry;
+    mesh->SetParentModel( this );
+    entry.mesh = mesh;
+    entry.material = material;
+    meshEntries.push_back(entry);
+}
+
+void Model::SetPosition(const DirectX::XMFLOAT3& pos)
+{
+    position = pos;
+    UpdateTransformationMatrix();
+}
+
+void Model::SetRotation(const DirectX::XMFLOAT3& rot)
+{
+    rotation = rot;
+    UpdateTransformationMatrix();
+}
+
+void Model::SetScale(const DirectX::XMFLOAT3& scl)
+{
+    scale = scl;
+    UpdateTransformationMatrix();
+}
+
+void Model::UpdateTransformationMatrix()
+{
+    // Create individual matrices
+    DirectX::XMMATRIX matScale = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+    DirectX::XMMATRIX matRotate = DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+    DirectX::XMMATRIX matTranslate = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+
+    // Combine them to get the final transformation matrix
+    transformationMatrix = matScale * matRotate * matTranslate;
+}
+
+XMMATRIX Model::GetTransformationMatrix()
+{
+    return transformationMatrix;
+}
+
+
+
+Scene\Model.h:
+
+#pragma once
+
+class Mesh;
+class Material;
+class GraphicsDevice;
+
+class Model {
+public:
+	struct MeshEntry {
+		Mesh* mesh;
+		Material* material;
+	};
+
+	Model( GraphicsDevice* graphicsDevice ) : graphicsDevice( graphicsDevice ) {}
+
+	void AddMeshEntry( Mesh* mesh, Material* material );
+	void SetPosition( const DirectX::XMFLOAT3& pos );
+	void SetRotation( const DirectX::XMFLOAT3& rot );
+	void SetScale( const DirectX::XMFLOAT3& scl );
+	DirectX::XMFLOAT3 GetPosition() { return position; }
+	DirectX::XMFLOAT3 GetRotation( ) { return rotation; }
+	DirectX::XMFLOAT3 GetScale( ) { return scale; }
+	void UpdateTransformationMatrix();
+	XMMATRIX GetTransformationMatrix();
+	// Functions to draw the model, set materials, etc.
+	std::vector<MeshEntry> GetMeshEntries() { return meshEntries; }
+
+private:
+
+	std::vector<MeshEntry> meshEntries;
+
+	DirectX::XMFLOAT3 position{ 0.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT3 rotation{ 0.0f, 0.0f, 0.0f }; // Represented as Euler angles in this example
+	DirectX::XMFLOAT3 scale{ 1.0f, 1.0f, 1.0f };
+
+	DirectX::XMMATRIX transformationMatrix = XMMatrixIdentity();
+
+	GraphicsDevice* graphicsDevice;
+};
+
+Scene\Scene.cpp:
+
+#include "pch.h"
+#include "Scene.h"
+
+void Scene::LoadFromFile( const std::string& filepath )
+{
+}
+
+
+Scene\Scene.h:
+
+#pragma once
+
+class Model;
+
+class Scene {
+public:
+    void LoadFromFile( const std::string& filepath );
+private:
+    std::vector<Model> models;
+};
 

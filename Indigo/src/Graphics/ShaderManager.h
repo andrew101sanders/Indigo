@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Indigo.h"
+class GraphicsDevice;
+class ShaderProgram;
 
 class ShaderManager
 {

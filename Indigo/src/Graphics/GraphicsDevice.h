@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Indigo.h"
-
 class GraphicsDevice
 {
 public:

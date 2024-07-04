@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Indigo.h"
-#include "DirectXManager.h"
+class DirectXManager;
 
 class Win32Application
 {
